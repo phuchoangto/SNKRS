@@ -19,7 +19,7 @@
                             <strong>Manage Categories</strong>
                         </div>
                         <div class="p-2">
-                            <a th:href="@{/category/add}" class="btn btn-primary">Add Category</a>
+                            <a class="btn btn-primary btn-sm" data-mdb-toggle="modal" data-mdb-target="#createCategoryModal">Create new category</a>
                         </div>
                     </div>
                 </h5>
@@ -33,27 +33,231 @@
                     </tr>
                     </thead>
                     <tbody>
-                        <th:block th:if="${categories.size() == 0}">
+                        <th:block th:if="${!categories.hasContent()}">
                             <tr>
                                 <td colspan="2" class="text-center">No categories found</td>
                             </tr>
                         </th:block>
-                        <th:block th:each="category : ${categories}">
-                            <tr>
+
+
+                        <th:block th:each="category : ${categories.content}">
+                            <tr th:attr="data-id=${category.id}">
                                 <td th:text="${category.name}"></td>
                                 <td>
-                                    <a th:href="@{/category/edit/{id}(id=${category.id})}" class="btn btn-primary btn-sm">Edit</a>
-                                    <a th:href="@{/category/delete/{id}(id=${category.id})}" class="btn btn-danger btn-sm">Delete</a>
+                                    <button th:attr="onclick='editCategory(\'' + ${category.id} + '\')'" class="btn btn-link btn-rounded btn-sm fw-bold">
+                                        Edit
+                                    </button>
+                                    <button th:attr="onclick='deleteCategory(\'' + ${category.id} + '\')'" class="btn btn-link btn-rounded btn-sm fw-bold text-danger">
+                                        Delete
+                                    </button>
                                 </td>
                             </tr>
                         </th:block>
                     </tbody>
                 </table>
             </div>
+            <div class="card-body">
+                <nav aria-label="...">
+                    <ul class="pagination">
+                        <li class="page-item" th:if="${categories.hasPrevious()}">
+                            <a class="page-link" th:href="@{/dashboard/categories?page=${categories.number - 1}}">Previous</a>
+                        </li>
+                        <th:block th:each="page : ${#numbers.sequence(0, categories.totalPages - 1)}">
+                            <li class="page-item" th:classappend="${page == categories.number} ? 'active'">
+                                <a class="page-link" th:href="@{/dashboard/categories?page=${page}}">[[${page + 1}]]</a>
+                            </li>
+                        </th:block>
+                        <li class="page-item" th:if="${categories.hasNext()}">
+                            <a class="page-link" th:href="@{/dashboard/categories?page=${categories.number + 1}}">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
         </div>
     </section>
     <!-- Section: Main chart -->
 </th:block>
-<th:block layout:fragment="modal"></th:block>
+<th:block layout:fragment="modal">
+    <!-- Modal -->
+    <div class="modal fade" id="createCategoryModal" tabindex="-1" aria-labelledby="createCategoryModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createCategoryModalLabel">Create new category</h5>
+                    <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="createCategoryForm">
+                        <div class="form-outline mb-4">
+                            <input type="text" id="form1Example1" class="form-control form-control-lg" name="name"/>
+                            <label class="form-label" for="form1Example1">Name</label>
+                        </div>
+                        <div class="form-outline">
+                            <input type="text" id="form1Example2" class="form-control form-control-lg" name="slug"/>
+                            <label class="form-label" for="form1Example2">Slug</label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-mdb-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" form="createCategoryForm">Create</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="editCategoryModal" tabindex="-1" aria-labelledby="createCategoryModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editCategoryModalLabel">Create new category</h5>
+                    <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editCategoryForm">
+                        <input id="editIdInput" type="hidden" name="id"/>
+                        <div class="form-outline mb-4">
+                            <input type="text" id="editNameInput" class="form-control form-control-lg" name="name"/>
+                            <label class="form-label" for="editNameInput">Name</label>
+                        </div>
+                        <div class="form-outline">
+                            <input type="text" id="editSlugInput" class="form-control form-control-lg" name="slug"/>
+                            <label class="form-label" for="editSlugInput">Slug</label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-mdb-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" form="editCategoryForm">Update</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>
+
+
+
+<th:block layout:fragment="scripts">
+    <script>
+        function editCategory(id) {
+            $.ajax({
+                url: '/api/categories/' + id,
+                type: 'GET',
+                success: function (res) {
+                    $('#editIdInput').val(res.data.id);
+                    $('#editNameInput').val(res.data.name);
+                    $('#editSlugInput').val(res.data.slug);
+                    $('#editCategoryModal').modal('show');
+                }
+            });
+        }
+
+        function deleteCategory(id) {
+            // ask for confirmation using sweetalert2
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '/api/categories/' + id,
+                        type: 'DELETE',
+                        success: function (res) {
+                            // iziToast
+                            iziToast.success({
+                                title: 'Success',
+                                message: res.message,
+                            });
+
+                            // update html
+                            $(`tr[data-id="${id}"]`).remove();
+                        }
+                    });
+                }
+            })
+        }
+
+        $(document).ready(function () {
+            $('#createCategoryForm').submit(function (e) {
+                e.preventDefault();
+                console.log($(this).serialize());
+                $.ajax({
+                    url: '/api/categories',
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    success: function (res) {
+                        // iziToast
+                        iziToast.success({
+                            title: 'Success',
+                            message: res.message,
+                        });
+
+                        // update html
+                        let html = `
+                            <tr data-id="${res.data.id}">
+                                <td>${res.data.name}</td>
+                                <td>
+                                    <button onclick="editCategory(${res.data.id})" class="btn btn-link btn-rounded btn-sm fw-bold">Edit</button>
+                                    <button onclick="deleteCategory(${res.data.id})" class="btn btn-link btn-rounded btn-sm fw-bold text-danger">Delete</button>
+                                </td>
+                            </tr>
+                        `;
+                        // append to first row
+                        $('table tbody tr:first').before(html);
+                    },
+                    error: function (err) {
+                        // iziToast
+                        iziToast.error({
+                            title: 'Error',
+                            message: err.responseJSON.message,
+                        });
+                    }
+                });
+            });
+
+            $('#editCategoryForm').submit(function (e) {
+                e.preventDefault();
+                console.log($(this).serialize());
+                const id = $('#editIdInput').val();
+                $.ajax({
+                    url: '/api/categories/' + id,
+                    type: 'PUT',
+                    data: $(this).serialize(),
+                    success: function (res) {
+                        // iziToast
+                        iziToast.success({
+                            title: 'Success',
+                            message: res.message,
+                        });
+
+                        // update html
+                        let html = `
+                            <td>${res.data.name}</td>
+                            <td>
+                                <button onclick="editCategory(${res.data.id})" class="btn btn-link btn-rounded btn-sm fw-bold">Edit</button>
+                                <button onclick="deleteCategory(${res.data.id})" class="btn btn-link btn-rounded btn-sm fw-bold text-danger">Delete</button>
+                            </td>
+                        `;
+                        // append to first row
+                        $(`table tbody tr[data-id="${res.data.id}"]`).html(html);
+                    },
+                    error: function (err) {
+                        // iziToast
+                        iziToast.error({
+                            title: 'Error',
+                            message: err.responseJSON.message,
+                        });
+                    }
+                });
+            });
+        })
+    </script>
+</th:block>
 </body>
 </html>
