@@ -97,7 +97,7 @@
                         </h2>
 
                         <p class="lead">
-                            <span id="price">$100</span>
+                            <span id="price" th:text="${product.getDisplayPrice()}"></span>
                         </p>
 
                         <strong><p style="font-size: 20px;">Sizes: </p></strong>
@@ -266,6 +266,7 @@
                 return;
             }
 
+
             $.ajax({
                 url: "/api/cart",
                 type: "POST",
@@ -277,8 +278,7 @@
                 success: function (res) {
                     console.log(res);
                     // update badge
-                    let currentQuantity = parseInt($("#cart-badge").text());
-                    $("#cart-badge").text(currentQuantity + 1);
+                    $("#cart-badge").text(res.data.totalItems);
                     // sweet alert
                     Swal.fire({
                         icon: 'success',

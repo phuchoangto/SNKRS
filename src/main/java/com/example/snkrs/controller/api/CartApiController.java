@@ -25,8 +25,8 @@ public class CartApiController {
             return ResponseEntity.badRequest().body(new ApiResponse("Invalid request", bindingResult.getAllErrors()));
         }
         try {
-            cartService.addItemToCart(cartItem);
-            return ResponseEntity.ok(new ApiResponse("Add to cart successfully", null));
+            var cart = cartService.addItemToCart(cartItem);
+            return ResponseEntity.ok(new ApiResponse("Add to cart successfully", cart));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ApiResponse(e.getMessage(), null));
         }
@@ -36,6 +36,32 @@ public class CartApiController {
     public ResponseEntity<ApiResponse> getCart() {
         try {
             return ResponseEntity.ok(new ApiResponse("Fetch cart successfully", cartService.getCart()));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ApiResponse(e.getMessage(), null));
+        }
+    }
+
+    @PutMapping("/api/cart")
+    public ResponseEntity<ApiResponse> updateCart(@Valid CartItem cartItem, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(new ApiResponse("Invalid request", bindingResult.getAllErrors()));
+        }
+        try {
+            var cart = cartService.updateItemInCart(cartItem);
+            return ResponseEntity.ok(new ApiResponse("Update cart successfully", cart));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ApiResponse(e.getMessage(), null));
+        }
+    }
+
+    @DeleteMapping("/api/cart")
+    public ResponseEntity<ApiResponse> deleteItemInCart(@Valid CartItem cartItem, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(new ApiResponse("Invalid request", bindingResult.getAllErrors()));
+        }
+        try {
+            var cart = cartService.deleteItemInCart(cartItem);
+            return ResponseEntity.ok(new ApiResponse("Delete item in cart successfully", cart));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ApiResponse(e.getMessage(), null));
         }

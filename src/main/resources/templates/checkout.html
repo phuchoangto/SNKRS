@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main-layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Cart</title>
+</head>
+<body>
+<th:block layout:fragment="content">
+
+    <!--Main layout-->
+    <main class="mt-5 pt-4">
+        <div class="container">
+            <!-- Heading -->
+            <h2 class="my-5 text-center">Checkout form</h2>
+
+            <form method="POST" action="/checkout" th:object="${saveOrderRequest}">
+                <div class="row">
+                    <!--Grid column-->
+                    <div class="col-md-8 mb-4">
+                        <!--Card-->
+                        <div class="card p-4">
+                            <div th:if="${#fields.hasErrors()}" class="alert alert-danger" role="alert">
+                                <div th:each="error : ${#fields.errors()}">
+                                    <th:block th:text="${error}"></th:block>
+                                </div>
+                            </div>
+
+                            <th:block th:if="${error}">
+                                <div class="alert alert-danger" role="alert" th:text="${error}">
+                                </div>
+                            </th:block>
+
+                            <!--Grid row-->
+                            <div class="row mb-3">
+                                <!--Grid column-->
+                                <div class="col-md-6 mb-2">
+                                    <!--firstName-->
+                                    <div class="form-outline">
+                                        <input type="text" class="form-control" th:field="*{firstName}" th:classappend="${#fields.hasErrors('firstName')} ? 'is-invalid' : ''">
+                                        <label class="form-label">First name</label>
+                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></div>
+                                    </div>
+                                </div>
+                                <!--Grid column-->
+
+                                <!--Grid column-->
+                                <div class="col-md-6 mb-2">
+                                    <!--lastName-->
+                                    <div class="form-outline">
+                                        <input type="text" class="form-control" th:field="*{lastName}" th:classappend="${#fields.hasErrors('lastName')} ? 'is-invalid' : ''">
+                                        <label class="form-label">Last name</label>
+                                    </div>
+                                </div>
+                                <!--Grid column-->
+                            </div>
+                            <!--Grid row-->
+
+                            <!--Phone-->
+                            <div class="col-md-12 mb-4">
+                                <div class="form-outline">
+                                    <input type="text" class="form-control" th:field="*{phone}" th:classappend="${#fields.hasErrors('phone')} ? 'is-invalid' : ''">
+                                    <label class="form-label">Phone</label>
+                                </div>
+                            </div>
+
+                            <!--email-->
+                            <div class="col-md-12 mb-4">
+                                <div class="form-outline">
+                                    <input type="text" class="form-control" th:field="*{email}" th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''">
+                                    <label class="form-label">Email</label>
+                                </div>
+                            </div>
+
+                            <!--address-->
+                            <div class="col-md-12 mb-4">
+                                <div class="form-outline">
+                                    <input type="text" class="form-control" th:field="*{address}" th:classappend="${#fields.hasErrors('address')} ? 'is-invalid' : ''">
+                                    <label class="form-label">Address</label>
+                                </div>
+                            </div>
+
+                            <!--Grid row-->
+                            <div class="row">
+                                <!--Grid column-->
+                                <div class="col-lg-4 col-md-12 mb-4">
+                                    <p class="mb-0">
+                                        Ward
+                                    </p>
+                                    <select class="js-example-basic-multiple form-select" data-live-search="true"
+                                            id="selectWard" name="ward" th:field="*{ward}" th:classappend="${#fields.hasErrors('ward')} ? 'is-invalid' : ''">
+                                    </select>
+                                </div>
+                                <!--Grid column-->
+
+                                <!--Grid column-->
+                                <div class="col-lg-4 col-md-12 mb-4">
+                                    <p class="mb-0">
+                                        District
+                                    </p>
+                                    <select class="js-example-basic-multiple form-select" data-live-search="true"
+                                            id="selectDistrict" name="district" th:field="*{district}" th:classappend="${#fields.hasErrors('district')} ? 'is-invalid' : ''">
+                                    </select>
+                                </div>
+                                <!--Grid column-->
+
+                                <!--Grid column-->
+                                <div class="col-lg-4 col-md-12 mb-4">
+                                    <p class="mb-0">
+                                        Province
+                                    </p>
+                                    <select class="js-example-basic-multiple form-select" data-live-search="true"
+                                            id="selectProvince" name="province" th:field="*{province}" th:classappend="${#fields.hasErrors('province')} ? 'is-invalid' : ''">
+                                    </select>
+                                </div>
+                                <!--Grid column-->
+                            </div>
+                            <!--Grid row-->
+
+                            <hr/>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value=""
+                                       id="flexCheckDefault" th:field="*{saveInfo}"/>
+                                <label class="form-check-label">Save this information for next time</label>
+                            </div>
+
+                            <hr/>
+
+                            <div class="my-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" value="PAYPAL" th:field="*{paymentMethod}" id="flexRadioDefault1" th:checked="${true}" />
+                                    <label class="form-check-label" for="flexRadioDefault1"> Paypal </label>
+                                </div>
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" value="CASH"
+                                           th:field="*{paymentMethod}"
+                                           id="flexRadioDefault2" checked/>
+                                    <label class="form-check-label" for="flexRadioDefault2"> Cash on delivery </label>
+                                </div>
+                            </div>
+                            <hr class="mb-4"/>
+                            <button class="btn btn-primary" type="submit">Continue to checkout</button>
+                        </div>
+                        <!--/.Card-->
+                    </div>
+                    <!--Grid column-->
+
+                    <!--Grid column-->
+                    <div class="col-md-4 mb-4">
+                        <!-- Heading -->
+                        <h4 class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="text-muted">Your cart</span>
+                            <span class="badge rounded-pill badge-primary">3</span>
+                        </h4>
+
+                        <!-- Cart -->
+                        <ul class="list-group mb-3">
+                            <th:block th:each="item : ${cart.items}">
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="my-0" th:text="${item.product.name}">Product name</h6>
+                                        <small class="text-muted" th:text="${item.sizeObj.name}">Brief
+                                            description</small>
+                                    </div>
+                                    <span class="text-muted"
+                                          th:text="${item.sizeObj.formattedPrice + ' x ' + item.quantity}">Brief description</span>
+                                </li>
+                            </th:block>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Total (VND)</span>
+                                <strong th:text="${cart.formattedTotalPrice}">0</strong>
+                            </li>
+                        </ul>
+                        <!-- Cart -->
+
+                        <!-- Promo code -->
+                        <div class="input-group mb-3">
+                            <input
+                                    type="text"
+                                    class="form-control"
+                                    placeholder="Promo code"
+                                    aria-label="Promo code"
+                                    aria-describedby="button-addon2"
+                            />
+                            <button class="btn btn-primary" type="button" id="button-addon2"
+                                    data-mdb-ripple-color="dark">
+                                redeem
+                            </button>
+                        </div>
+                        <!-- Promo code -->
+                    </div>
+                    <!--Grid column-->
+                </div>
+
+            </form>
+            <!--Grid row-->
+            <!--Grid row-->
+        </div>
+    </main>
+    <!--Main layout-->
+
+</th:block>
+<th:block layout:fragment="scripts">
+    <script th:inline="javascript">
+        $.ajax({
+            url: 'https://provinces.open-api.vn/api/?depth=1',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                let provinces = data.map(function (item) {
+                    return {
+                        name: item.name,
+                        code: item.code,
+                        division_type: item.division_type,
+                        codename: item.codename,
+                        phone_code: item.phone_code,
+                        districts: item.districts,
+                    };
+                });
+
+                provinces.forEach(function (item) {
+                    $('#selectProvince').append(
+                        $('<option></option>').val(item.code).html(item.name)
+                    );
+                });
+            },
+        });
+
+        $(document).ready(function () {
+            $('.js-example-basic-multiple').select2();
+
+            $('#selectProvince').on('change', function () {
+                //https://provinces.open-api.vn/api/p/1?depth=2
+                let code = $(this).val();
+                let url = 'https://provinces.open-api.vn/api/p/' + code + '?depth=2';
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (data) {
+                        let districts = data.districts.map(function (item) {
+                            return {
+                                name: item.name,
+                                code: item.code,
+                                division_type: item.division_type,
+                                codename: item.codename,
+                                province_code: item.province_code,
+                            };
+                        });
+
+                        $('#selectDistrict').empty();
+                        $('#selectWard').empty();
+                        districts.forEach(function (item) {
+                            $('#selectDistrict').append(
+                                $('<option></option>').val(item.code).html(item.name)
+                            );
+                        });
+                    },
+                });
+            });
+
+            $('#selectDistrict').on('change', function () {
+                let district = $(this).val();
+                let url = 'https://provinces.open-api.vn/api/d/' + district + '?depth=2';
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (data) {
+                        let wards = data.wards.map(function (item) {
+                            return {
+                                name: item.name,
+                                code: item.code,
+                                division_type: item.division_type,
+                                codename: item.codename,
+                                district_code: item.district_code,
+                            };
+                        });
+
+                        // clear
+                        $('#selectWard').empty();
+                        wards.forEach(function (item) {
+                            $('#selectWard').append(
+                                $('<option></option>').val(item.code).html(item.name)
+                            );
+                        });
+                    },
+                });
+            });
+        });
+    </script>
+</th:block>
+</body>
+</html>

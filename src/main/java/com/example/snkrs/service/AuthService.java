@@ -4,6 +4,8 @@ import com.example.snkrs.dto.UserDTO;
 import com.example.snkrs.model.User;
 import com.example.snkrs.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -38,5 +40,11 @@ public class AuthService {
         } catch (Exception e) {
             throw new RuntimeException("Error registering user");
         }
+    }
+
+    public User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        return userRepository.findByUsername(username).orElse(null);
     }
 }

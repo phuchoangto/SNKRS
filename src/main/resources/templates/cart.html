@@ -4,144 +4,201 @@
       layout:decorate="~{layout/main-layout}">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
-
-    <style>
-        .carousel-item {
-            height: 50vh;
-        }
-        .card {
-            box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-        }
-        .footer-cta {
-            box-shadow: rgba(0, 0, 0, 0.15) 0px 5px 15px;
-        }
-        .price {
-            color: #263238;
-            font-size: 24px;
-        }
-
-        .card-title {
-            color:#263238
-        }
-
-        .sale {
-            color: #E53935
-        }
-
-        .sale-badge {
-            background-color: #E53935
-        }
-    </style>
+    <title>Cart</title>
 </head>
 <body>
 <th:block layout:fragment="content">
-    <!-- Navbar -->
-    <nav class="navbar fixed-top navbar-expand-lg navbar-light bg-white">
-        <!-- Container wrapper -->
-        <div class="container">
-            <!-- Toggle button -->
-            <button class="navbar-toggler" type="button" data-mdb-toggle="collapse" data-mdb-target="#navbarSupportedContent1" aria-controls="navbarSupportedContent1" aria-expanded="false" aria-label="Toggle navigation">
-                <i class="fas fa-bars"></i>
-            </button>
-
-            <!-- Collapsible wrapper -->
-            <div class="collapse navbar-collapse" id="navbarSupportedContent1">
-                <!-- Navbar brand -->
-                <a class="navbar-brand mt-2 mt-sm-0" href="https://mdbootstrap.com/">
-                    <img src="https://mdbcdn.b-cdn.net/img/logo/mdb-transaprent-noshadows.webp" height="20" alt="MDB Logo" loading="lazy" />
-                </a>
-                <!-- Left links -->
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item active">
-                        <a class="nav-link" href="https://mdbootstrap.com/">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="https://mdbootstrap.com/docs/standard/">About MDB</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="https://mdbootstrap.com/docs/standard/getting-started/installation/">Free download</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="https://mdbootstrap.com/education/bootstrap/">Free tutorials</a>
-                    </li>
-                </ul>
-                <!-- Left links -->
-            </div>
-            <!-- Collapsible wrapper -->
-
-            <!-- Right elements -->
-            <div class="d-flex align-items-center">
-                <!-- Icon -->
-                <a class="nav-link me-3" href="#">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span class="badge rounded-pill badge-notification bg-danger">1</span>
-                </a>
-
-                <a class="nav-link me-3" href="#">
-                    <i class="fab fa-facebook-f"></i>
-                </a>
-                <a class="nav-link me-3" href="#">
-                    <i class="fab fa-twitter"></i>
-                </a>
-                <a href="https://github.com/mdbootstrap/bootstrap-material-design" class="border rounded px-2 nav-link" target="_blank"> <i class="fab fa-github me-2"></i>MDB GitHub </a>
-            </div>
-            <!-- Right elements -->
-        </div>
-        <!-- Container wrapper -->
-    </nav>
-    <!-- Navbar -->
-
     <main>
+        <section class="h-100 gradient-custom">
+            <div class="container py-5">
+                <div class="row d-flex justify-content-center my-4">
+                    <div class="col-md-8">
+                        <div class="card mb-4">
+                            <div class="card-header py-3">
+                                <h5 class="mb-0">Cart</h5>
+                            </div>
+                            <div class="card-body p-0">
+                                <table class="table align-middle mb-0 bg-white">
+                                    <thead class="bg-light">
+                                    <tr>
+                                        <th>Image</th>
+                                        <th>Name</th>
+                                        <th>Price</th>
+                                        <th>Quantity</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <th:block th:if="${cart.items.isEmpty()}">
+                                        <tr>
+                                            <td colspan="3" class="text-center">No products found</td>
+                                        </tr>
+                                    </th:block>
+
+                                    <th:block th:each="item : ${cart.items}">
+                                        <tr th:attr="data-id=${item.product.id}">
+                                            <td>
+                                                <img th:src="${item.product.image}" class="img-fluid" style="max-width: 100px"
+                                                     alt="Product image"/>
+                                            </td>
+                                            </td>
+
+                                            <td>
+                                                <p class="fw-bold mb-1" th:text="${item.product.name}"></p>
+                                                <p class="text-muted mb-0"><b> Size: </b> <span th:text="${item.sizeObj.name}"></span></p>
+                                            </td>
+
+                                            <td th:text="${item.sizeObj.formattedPrice}"></td>
+
+                                            <td>
+                                                <input type="number" class="form-control" th:value="${item.quantity}" name="quantity" min="0">
+                                            </td>
+
+                                            <td>
+                                                <a onclick="updateQuantity(this)" class="btn btn-primary btn-sm">
+                                                    <i class="fas fa-sync"></i>
+                                                    Update
+                                                </a>
+                                                <a onclick="deleteCartItem(this)" class="btn btn-danger btn-sm">
+                                                    <i class="fas fa-trash"></i>
+                                                    Remove
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <p><strong>Expected shipping delivery</strong></p>
+                                <p class="mb-0">12.10.2020 - 14.10.2020</p>
+                            </div>
+                        </div>
+                        <div class="card mb-4 mb-lg-0">
+                            <div class="card-body">
+                                <p><strong>We accept</strong></p>
+                                <img class="me-2" width="45px"
+                                     src="https://mdbcdn.b-cdn.net/wp-content/plugins/woocommerce-gateway-stripe/assets/images/visa.svg"
+                                     alt="Visa" />
+                                <img class="me-2" width="45px"
+                                     src="https://mdbcdn.b-cdn.net/wp-content/plugins/woocommerce-gateway-stripe/assets/images/amex.svg"
+                                     alt="American Express" />
+                                <img class="me-2" width="45px"
+                                     src="https://mdbcdn.b-cdn.net/wp-content/plugins/woocommerce-gateway-stripe/assets/images/mastercard.svg"
+                                     alt="Mastercard" />
+                                <img class="me-2" width="45px"
+                                     src="https://mdbcdn.b-cdn.net/wp-content/plugins/woocommerce/includes/gateways/paypal/assets/images/paypal.webp"
+                                     alt="PayPal acceptance mark" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card mb-4">
+                            <div class="card-header py-3">
+                                <h5 class="mb-0">Summary</h5>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group list-group-flush">
+                                    <li
+                                            class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0">
+                                        Products
+                                        <span class="total" th:text="${cart.getFormattedTotalPrice}"></span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                        Shipping
+                                        <span>Gratis</span>
+                                    </li>
+                                    <li
+                                            class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3">
+                                        <div>
+                                            <strong>Total amount</strong>
+                                            <strong>
+                                                <p class="mb-0">(including VAT)</p>
+                                            </strong>
+                                        </div>
+                                        <span><strong class="total" th:text="${cart.getFormattedTotalPrice}"></strong></span>
+                                    </li>
+                                </ul>
+
+                                <button type="button" class="btn btn-primary btn-lg btn-block">
+                                    Go to checkout
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
+</th:block>
+<th:block layout:fragment="scripts">
+    <script th:inline="javascript">
+/*<![CDATA[*/
+        function updateQuantity(element) {
+            let row = $(element).closest('tr');
+            let id = row.data('id');
+            let quantity = row.find('input[name="quantity"]').val();
+            let size = row.find('.text-muted span').text();
 
-    <footer class="text-center text-white mt-4" style="background-color: #607d8b;">
-        <!--Call to action-->
-        <div class="pt-4 pb-2">
-            <a class="btn btn-outline-white footer-cta mx-2" href="https://mdbootstrap.com/docs/jquery/getting-started/download/" target="_blank" role="button">
-                Download MDB
-                <i class="fas fa-download ms-2"></i>
-            </a>
-            <a class="btn btn-outline-white footer-cta mx-2" href="https://mdbootstrap.com/education/bootstrap/" target="_blank" role="button">
-                Start free tutorial
-                <i class="fas fa-graduation-cap ms-2"></i>
-            </a>
-        </div>
-        <!--/.Call to action-->
+            $.ajax({
+                url: '/api/cart',
+                method: 'PUT',
+                data: {
+                    id: id,
+                    quantity: quantity,
+                    size: size
+                },
+                success: function (response) {
+                    console.log(response);
+                    $('.total').text(response.data.totalPrice);
+                },
+                error: function (response) {
+                    console.log(response);
+                    // sweet alert
+                    swal({
+                        title: "Error",
+                        text: response.responseJSON.message,
+                        icon: "error",
+                        button: "Ok",
+                    });
+                }
+            });
+        }
 
-        <hr class="text-dark" />
+        function deleteCartItem(element) {
+            let row = $(element).closest('tr');
+            let id = row.data('id');
+            let size = row.find('.text-muted span').text();
+            let quantity = row.find('input[name="quantity"]').val();
 
-        <div class="container">
-            <!-- Section: Social media -->
-            <section class="mb-3">
-                <!-- Facebook -->
-                <a class="btn-link btn-floating btn-lg text-white" href="#!" role="button" data-mdb-ripple-color="dark"><i class="fab fa-facebook-f"></i></a>
-
-                <!-- Twitter -->
-                <a class="btn-link btn-floating btn-lg text-white" href="#!" role="button" data-mdb-ripple-color="dark"><i class="fab fa-twitter"></i></a>
-
-                <!-- Google -->
-                <a class="btn-link btn-floating btn-lg text-white" href="#!" role="button" data-mdb-ripple-color="dark"><i class="fab fa-google"></i></a>
-
-                <!-- Instagram -->
-                <a class="btn-link btn-floating btn-lg text-white" href="#!" role="button" data-mdb-ripple-color="dark"><i class="fab fa-instagram"></i></a>
-
-                <!-- YouTube -->
-                <a class="btn-link btn-floating btn-lg text-white" href="#!" role="button" data-mdb-ripple-color="dark"><i class="fab fa-youtube"></i></a>
-                <!-- Github -->
-                <a class="btn-link btn-floating btn-lg text-white" href="#!" role="button" data-mdb-ripple-color="dark"><i class="fab fa-github"></i></a>
-            </section>
-            <!-- Section: Social media -->
-        </div>
-        <!-- Grid container -->
-
-        <!-- Copyright -->
-        <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2); text-color: #e0e0e0;">
-            © 2022 Copyright:
-            <a class="text-white" href="https://mdbootstrap.com/">MDBootstrap.com</a>
-        </div>
-        <!-- Copyright -->
-    </footer>
+            $.ajax({
+                url: '/api/cart',
+                method: 'DELETE',
+                data: {
+                    id: id,
+                    size: size,
+                    quantity: quantity
+                },
+                success: function (response) {
+                    console.log(response);
+                    row.remove();
+                    $('.total').text(response.data.totalPrice);
+                },
+                error: function (response) {
+                    console.log(response);
+                    // sweet alert
+                    swal({
+                        title: "Error",
+                        text: response.responseJSON.message,
+                        icon: "error",
+                        button: "Ok",
+                    });
+                }
+            });
+        }
+        /*]]>*/
+    </script>
 </th:block>
 </body>
 </html>

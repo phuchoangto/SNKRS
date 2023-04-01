@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.SessionScope;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -21,18 +22,41 @@ public class CartService {
         this.productRepository = productRepository;
     }
 
-    public List<CartItem> showCart() {
-        var items = cart.getItems();
-        for (var item : items) {
-            var product = productRepository.findById(item.getId()).orElseThrow(() -> new RuntimeException("Product not found"));
-            var size = product.getSizes().stream().filter(s -> s.getName().equals(item.getSize())).findFirst().get();
-            item.setProduct(product);
-            item.setSizeObj(size);
+    public Cart deleteItemInCart(CartItem item) {
+        // check item is already in cart
+        CartItem itemInCart = cart.getItems().stream().filter(i -> i.getId().equals(item.getId()) && i.getSize().equals(item.getSize())).findFirst().orElse(null);
+        if (itemInCart == null) {
+            throw new RuntimeException("Item not found");
         }
-        return items;
+        // remove item in cart
+        cart.getItems().remove(itemInCart);
+        return cart;
     }
 
-    public void addItemToCart(CartItem item) {
+    public Cart updateItemInCart(CartItem item) {
+        // check item is already in cart
+        CartItem itemInCart = cart.getItems().stream().filter(i -> i.getId().equals(item.getId()) && i.getSize().equals(item.getSize())).findFirst().orElse(null);
+        if (itemInCart == null) {
+            throw new RuntimeException("Item not found");
+        }
+        // check quantity is valid
+        if (item.getQuantity() <= 0) {
+            throw new RuntimeException("Quantity must be greater than 0");
+        }
+        // check quantity is in stock
+        if (item.getQuantity() > itemInCart.getSizeObj().getQuantity()) {
+            throw new RuntimeException("Not enough quantity in stock");
+        }
+        // update item in cart
+        itemInCart.setQuantity(item.getQuantity());
+        return cart;
+    }
+
+    public Cart showCart() {
+        return cart;
+    }
+
+    public Cart addItemToCart(CartItem item) {
         // check product exist
         var product = productRepository.findById(item.getId()).orElseThrow(() -> new RuntimeException("Product not found"));
         // check size exist
@@ -55,7 +79,10 @@ public class CartService {
             throw new RuntimeException("Item is already in cart");
         }
         // add item to cart
+        item.setProduct(product);
+        item.setSizeObj(sizeInStock);
         cart.getItems().add(item);
+        return cart;
     }
 
     public void removeItemFromCart(CartItem item) {

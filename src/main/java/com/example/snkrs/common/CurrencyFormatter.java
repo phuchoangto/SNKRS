@@ -12,6 +12,13 @@ public class CurrencyFormatter {
         return formatter.format(price);
     }
 
+    // format on usd
+    public static String formatUSD(BigDecimal price) {
+        Locale locale = new Locale("en", "US");
+        NumberFormat formatter = NumberFormat.getCurrencyInstance(locale);
+        return formatter.format(price);
+    }
+
     public static String formatRange(BigDecimal minPrice, BigDecimal maxPrice) {
         Locale locale = new Locale("vi", "VN");
         NumberFormat formatter = NumberFormat.getCurrencyInstance(locale);
