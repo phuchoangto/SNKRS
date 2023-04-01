@@ -22,11 +22,11 @@
                     </div>
                     <div class="card-body">
                         <div class="form-outline mb-4">
-                            <input type="text" id="name" class="form-control" name="name"/>
+                            <input type="text" id="name" class="form-control" name="name" />
                             <label class="form-label" for="name">Name</label>
                         </div>
                         <div class="form-outline mb-4">
-                            <input type="text" id="slug" class="form-control" name="slug"/>
+                            <input type="text" id="slug" class="form-control" name="slug" />
                             <label class="form-label" for="slug">Slug</label>
                         </div>
                         <textarea id="description"></textarea>
@@ -86,7 +86,7 @@
                             <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" checked/>
                             <label class="form-check-label" for="flexCheckChecked">Publish</label>
                         </div>
-                        <button class="btn btn-primary btn-block">Save</button>
+                        <button class="btn btn-primary btn-block" onclick="save()">Save</button>
                     </div>
                 </div>
             </section>
@@ -103,10 +103,6 @@
                     </div>
                     <div class="card-body">
                         <select class="js-example-basic-multiple form-select" multiple="multiple">
-                            <option selected>Open this select menu</option>
-                            <option value="1">One</option>
-                            <option value="2">Two</option>
-                            <option value="3">Three</option>
                         </select>
                     </div>
                 </div>
@@ -123,7 +119,7 @@
                         </h5>
                     </div>
                     <div class="card-body">
-                        <img onclick="selectImage()" style="cursor: pointer;" src="https://mdbcdn.b-cdn.net/img/new/standard/city/041.webp" class="img-thumbnail shadow-0" alt="Hollywood Sign on The Hill"/>
+                        <img onclick="selectImage()" style="cursor: pointer;"  class="img-thumbnail" id="imagePreview"/>
                         <input type="file" id="image" name="image" style="display: none"/>
                     </div>
                 </div>
@@ -135,10 +131,115 @@
 
 <th:block layout:fragment="scripts">
     <!-- CKEditor -->
-    <script th:src="@{/js/ckeditor/ckeditor.js}"></script>
-    <script>
+    <script th:src="@{/js/ckbox.js}"></script>
+    <script th:src="@{/js/ckeditor.js}"></script>
+    <script th:inline="javascript">
+        let editor;
+        let product = /*[[${product}]]*/ null;
+
+        // This sample still does not showcase all CKEditor 5 features (!)
+        // Visit https://ckeditor.com/docs/ckeditor5/latest/features/index.html to browse all the features.
+        CKEDITOR.ClassicEditor.create($('#description')[0], {
+            // https://ckeditor.com/docs/ckeditor5/latest/features/toolbar/toolbar.html#extended-toolbar-configuration-format
+            toolbar: {
+                items: [
+                    'ckbox', 'uploadImage', '|',
+                    'exportPDF','exportWord', '|',
+                    'findAndReplace', 'selectAll', '|',
+                    'heading', '|',
+                    'bold', 'italic', 'strikethrough', 'underline', 'code', 'subscript', 'superscript', 'removeFormat', '|',
+                    'bulletedList', 'numberedList', 'todoList', '|',
+                    'outdent', 'indent', '|',
+                    'undo', 'redo',
+                    '-',
+                    'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor', 'highlight', '|',
+                    'alignment', '|',
+                    'link', 'blockQuote', 'insertTable', 'mediaEmbed', 'codeBlock', 'htmlEmbed', '|',
+                    'specialCharacters', 'horizontalLine', 'pageBreak', '|',
+                    'textPartLanguage', '|',
+                    'sourceEditing'
+                ],
+                shouldNotGroupWhenFull: true
+            },
+            list: {
+                properties: {
+                    styles: true,
+                    startIndex: true,
+                    reversed: true
+                }
+            },
+            // https://ckeditor.com/docs/ckeditor5/latest/features/headings.html#configuration
+            heading: {
+                options: [
+                    { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
+                    { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
+                    { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' },
+                    { model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3' },
+                    { model: 'heading4', view: 'h4', title: 'Heading 4', class: 'ck-heading_heading4' },
+                    { model: 'heading5', view: 'h5', title: 'Heading 5', class: 'ck-heading_heading5' },
+                    { model: 'heading6', view: 'h6', title: 'Heading 6', class: 'ck-heading_heading6' }
+                ]
+            },
+            // https://ckeditor.com/docs/ckeditor5/latest/features/editor-placeholder.html#using-the-editor-configuration
+            placeholder: 'Welcome to CKEditor 5 + CKBox!',
+            ckbox: {
+                // The development token endpoint is a special endpoint to help you in getting started with
+                // CKEditor Cloud Services.
+                // Please note the development token endpoint returns tokens with the CKBox administrator role.
+                // It offers unrestricted, full access to the service and will expire 30 days after being used for the first time.
+                // -------------------------------------------------------------
+                // !!! You should not use it on production !!!
+                // -------------------------------------------------------------
+                // Read more: https://ckeditor.com/docs/ckbox/latest/guides/configuration/authentication.html#token-endpoint
+
+                // You need to provide your own token endpoint here
+                tokenUrl: 'https://96609.cke-cs.com/token/dev/U1EkunPE6jlx9tbGhbK3F2JCH6AobL4lgENU?limit=10'
+            },
+            // The "super-build" contains more premium features that require additional configuration, disable them below.
+            // Do not turn them on unless you reqd the documentation and know how to configure them and setup the editor.
+            removePlugins: [
+                // These two are commercial, but you can try them out without registering to a trial.
+                // 'ExportPdf',
+                // 'ExportWord',
+                'EasyImage',
+                'RealTimeCollaborativeComments',
+                'RealTimeCollaborativeTrackChanges',
+                'RealTimeCollaborativeRevisionHistory',
+                'PresenceList',
+                'Comments',
+                'TrackChanges',
+                'TrackChangesData',
+                'RevisionHistory',
+                'Pagination',
+                'WProofreader',
+                // Careful, with the Mathtype plugin CKEditor will not load when loading this sample
+                // from a local file system (file://) - load this site via HTTP server if you enable MathType
+                'MathType'
+            ]
+        })
+            .then(newEditor => {
+                editor = newEditor;
+                editor.editing.view.change(writer => {
+                    writer.setStyle(
+                        'height',
+                        '400px',
+                        editor.editing.view.document.getRoot()
+                    );
+                });
+                if (product !== null) {
+                    editor.setData(product.description);
+                }
+            })
+            .catch(error => {
+                console.error(error);
+            });
+
         function selectImage() {
             $('#image').click();
+        }
+
+        function removeSize(element) {
+            $(element).closest('tr').remove();
         }
 
         function addSize() {
@@ -186,7 +287,7 @@
                 '<td>' + sizePrice + '</td>' +
                 '<td>' + sizeQuantity + '</td>' +
                 '<td>' +
-                '<button class="btn btn-danger btn-sm">Delete</button>' +
+                '<button class="btn btn-danger btn-sm" onclick="removeSize(this)">Remove</button>' +
                 '</td>' +
                 '</tr>';
 
@@ -194,10 +295,130 @@
             $('tbody').prepend(html);
         }
 
+        function save() {
+            let name = $('#name').val();
+            let slug = $('#slug').val();
+            let description = editor.getData();
+            let image = $('#image').prop('files')[0];
+            let categories = $('.js-example-basic-multiple').val();
+            let publish = $('#flexCheckChecked').is(':checked');
+
+            // get sizes
+            let sizes = [];
+
+            $('tbody tr').each(function () {
+                let sizeName = $(this).find('td').eq(0).text();
+                let sizePrice = $(this).find('td').eq(1).text();
+                let sizeQuantity = $(this).find('td').eq(2).text();
+
+                // only push valid sizes
+                let isValid = true;
+                if (sizeName === '' || sizePrice === '' || sizeQuantity === '') {
+                    isValid = false;
+                }
+
+                if (sizePrice <= 0 || sizeQuantity <= 0) {
+                    isValid = false;
+                }
+
+                if (isValid) {
+                    sizes.push({
+                        name: sizeName,
+                        price: sizePrice,
+                        quantity: sizeQuantity
+                    });
+                }
+            });
+
+            // validate fields
+            if (name === '' || slug === '' || description === '' || categories === undefined || categories.length === 0 || sizes.length === 0) {
+                console.log(name, slug, description, image, categories, sizes);
+                iziToast.error({
+                    title: 'Error',
+                    message: 'Please fill all fields',
+                });
+                return;
+            }
+
+            // validate slug
+            if (!slug.match(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)) {
+                iziToast.error({
+                    title: 'Error',
+                    message: 'Slug is invalid',
+                });
+                return;
+            }
+
+            // send request
+            let formData = new FormData();
+            formData.append('name', name);
+            formData.append('slug', slug);
+            formData.append('description', description);
+            if (image !== undefined) {
+                formData.append('image', image);
+            }
+            formData.append('categories', categories);
+            formData.append('sizes', JSON.stringify(sizes));
+            formData.append('publish', publish);
+
+            $.ajax({
+                url: product === null ? '/api/products' : '/api/products/' + product.id,
+                type: product === null ? 'POST' : 'PUT',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    console.log(response);
+                    iziToast.success({
+                        title: 'Success',
+                        message: response.message,
+                    });
+                },
+                error: function (error) {
+                    console.log(error);
+                    iziToast.error({
+                        title: 'Error',
+                        message: error.responseJSON.message,
+                    });
+                }
+            });
+        }
+
+
         $(document).ready(function () {
+            // fetch categories
+            $.ajax({
+                url: '/api/categories',
+                type: 'GET',
+                success: function (response) {
+                    let html = '';
+                    response.data.content.forEach(function (category) {
+                        if (product !== null) {
+                            let isExist = false;
+                            product.categories.forEach(function (productCategory) {
+                                if (productCategory.id === category.id) {
+                                    isExist = true;
+                                }
+                            });
+                            if (isExist) {
+                                html += '<option value="' + category.id + '" selected>' + category.name + '</option>';
+                            } else {
+                                html += '<option value="' + category.id + '">' + category.name + '</option>';
+                            }
+                        } else {
+                            html += '<option value="' + category.id + '">' + category.name + '</option>';
+                        }
+                    });
+                    $('.js-example-basic-multiple').append(html);
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+
             $(".form-select").select2();
 
-            CKEDITOR.replace('description');
+
 
             $('#image').change(function () {
                 let file = $(this)[0].files[0];
@@ -214,6 +435,29 @@
                 let slug = name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
                 $('#slug').val(slug);
             });
+
+            // if product not null set value
+            if (product !== null) {
+                $('#name').val(product.name);
+                $('#slug').val(product.slug);
+                $('.img-thumbnail').attr('src', product.image);
+                $('#flexCheckChecked').prop('checked', product.publish);
+                $('.js-example-basic-multiple').val(product.categories.map(function (category) {
+                    return category.id;
+                }));
+                $('.js-example-basic-multiple').trigger('change');
+                product.sizes.forEach(function (size) {
+                    let html = '<tr>' +
+                        '<td>' + size.name + '</td>' +
+                        '<td>' + size.price + '</td>' +
+                        '<td>' + size.quantity + '</td>' +
+                        '<td>' +
+                        '<button class="btn btn-danger btn-sm" onclick="removeSize(this)">Remove</button>' +
+                        '</td>' +
+                        '</tr>';
+                    $('tbody').append(html);
+                });
+            }
         });
     </script>
 </th:block>

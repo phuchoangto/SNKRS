@@ -3,82 +3,138 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/dashboard-layout}">
 <head>
-  <meta charset="UTF-8">
-  <title>Manage Categories</title>
+    <meta charset="UTF-8">
+    <title>Manage Categories</title>
 </head>
 <body>
 <th:block layout:fragment="content">
-  <!-- Section: Main chart -->
-  <section class="mb-4">
-    <div class="card">
-      <div class="card-header py-3">
-        <h5 class="mb-0 text-center">
-          <!-- Title and button in one line but title in center button on the right -->
-          <div class="d-flex justify-content-between">
-            <div class="p-2 d-flex align-items-center">
-              <strong>Manage Products</strong>
+    <!-- Section: Main chart -->
+    <section class="mb-4">
+        <div class="card">
+            <div class="card-header py-3">
+                <h5 class="mb-0 text-center">
+                    <!-- Title and button in one line but title in center button on the right -->
+                    <div class="d-flex justify-content-between">
+                        <div class="p-2 d-flex align-items-center">
+                            <strong>Manage Products</strong>
+                        </div>
+                        <div class="p-2">
+                            <a th:href="@{/dashboard/products/create}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-plus"></i>
+                                Create new product
+                            </a>
+                        </div>
+                    </div>
+                </h5>
             </div>
-            <div class="p-2">
-              <a th:href="@{/dashboard/products/create}" class="btn btn-primary btn-sm">
-                <i class="fas fa-plus"></i>
-                Create new product
-              </a>
-            </div>
-          </div>
-        </h5>
-      </div>
-      <div class="card-body p-0">
-        <table class="table align-middle mb-0 bg-white">
-          <thead class="bg-light">
-          <tr>
-            <th>Image</th>
-            <th>Name</th>
-            <th>Actions</th>
-          </tr>
-          </thead>
-          <tbody>
-          <th:block th:if="${!products.hasContent()}">
-            <tr>
-              <td colspan="3" class="text-center">No products found</td>
-            </tr>
-          </th:block>
+            <div class="card-body p-0">
+                <table class="table align-middle mb-0 bg-white">
+                    <thead class="bg-light">
+                    <tr>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Categories</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <th:block th:if="${!products.hasContent()}">
+                        <tr>
+                            <td colspan="3" class="text-center">No products found</td>
+                        </tr>
+                    </th:block>
 
 
-          <th:block th:each="product : ${products.content}">
-            <tr th:attr="data-id=${product.id}">
-              <td th:text="${product.images[0]}"></td>
-              </td>
-              <td th:text="${product.name}"></td>
-              <td>
-                <a th:href="@{/dashboard/products/{id}(id=${product.id})}" class="btn btn-link btn-rounded btn-sm fw-bold text-primary">
-                  Edit
-                </a>
-              </td>
-            </tr>
-          </th:block>
-          </tbody>
-        </table>
-      </div>
-      <div class="card-body">
-        <nav aria-label="...">
-          <ul class="pagination">
-            <li class="page-item" th:if="${categories.hasPrevious()}">
-              <a class="page-link" th:href="@{/dashboard/categories?page=${categories.number - 1}}">Previous</a>
-            </li>
-            <th:block th:each="page : ${#numbers.sequence(0, categories.totalPages - 1)}">
-              <li class="page-item" th:classappend="${page == categories.number} ? 'active'">
-                <a class="page-link" th:href="@{/dashboard/categories?page=${page}}">[[${page + 1}]]</a>
-              </li>
-            </th:block>
-            <li class="page-item" th:if="${categories.hasNext()}">
-              <a class="page-link" th:href="@{/dashboard/categories?page=${categories.number + 1}}">Next</a>
-            </li>
-          </ul>
-        </nav>
-      </div>
-    </div>
-  </section>
-  <!-- Section: Main chart -->
+                    <th:block th:each="product : ${products.content}">
+                        <tr th:attr="data-id=${product.id}">
+                            <td>
+                                <img th:src="${product.image}" class="img-fluid" style="max-width: 100px"
+                                     alt="Product image"/>
+                            </td>
+                            </td>
+
+                            <td th:text="${product.name}"></td>
+
+                            <!-- if product.sizes has one element, then show the price of that element -->
+                            <!-- if product.sizes has more than one element, then show the min and max price -->
+                            <td th:text="${product.getDisplayPrice()}"></td>
+
+                            <td>
+                                <th:block th:each="category : ${product.categories}">
+                                    <span th:text="${category.name}" class="badge badge-primary"></span>
+                                    <br/>
+                                </th:block>
+                            </td>
+                            <td>
+                                <a th:href="@{/dashboard/products/{id}(id=${product.id})}"
+                                   class="btn btn-link btn-rounded btn-sm fw-bold text-primary">
+                                    Edit
+                                </a>
+                                <th:block th:if="${product.status.name() == 'PUBLISHED'}">
+                                    <a class="btn btn-link btn-rounded btn-sm fw-bold text-danger" onclick="togglePublish(this)">
+                                        Unpublish
+                                    </a>
+                                </th:block>
+                                <th:block th:unless="${product.status.name() == 'PUBLISHED'}">
+                                    <a onclick="togglePublish(this)" class="btn btn-link btn-rounded btn-sm fw-bold text-success">
+                                        Publish
+                                    </a>
+                                </th:block>
+                            </td>
+                        </tr>
+                    </th:block>
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-body">
+                <nav aria-label="...">
+                    <ul class="pagination">
+                        <li class="page-item" th:if="${products.hasPrevious()}">
+                            <a class="page-link"
+                               th:href="@{/dashboard/categories?page=${products.number - 1}}">Previous</a>
+                        </li>
+                        <th:block th:each="page : ${#numbers.sequence(0, products.totalPages - 1)}">
+                            <li class="page-item" th:classappend="${page == products.number} ? 'active'">
+                                <a class="page-link" th:href="@{/dashboard/products?page=${page}}">[[${page + 1}]]</a>
+                            </li>
+                        </th:block>
+                        <li class="page-item" th:if="${products.hasNext()}">
+                            <a class="page-link" th:href="@{/dashboard/categories?page=${products.number + 1}}">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </section>
+    <!-- Section: Main chart -->
+</th:block>
+
+<th:block layout:fragment="scripts">
+    <script>
+        function togglePublish(element) {
+            let productId = $(element).closest('tr').attr('data-id');
+            $.ajax({
+                url: '/api/products/' + productId + '/toggle-publish',
+                type: 'PUT',
+                success: function (response) {
+                    console.log(response);
+
+                    iziToast.success({
+                        title: 'Success',
+                        message: 'Product status updated successfully',
+                    });
+
+                    // update button
+                    if (response.data.status === "PUBLISHED") {
+                        $(element).removeClass('text-success').addClass('text-danger').text('Unpublish');
+                    } else {
+                        $(element).removeClass('text-danger').addClass('text-success').text('Publish');
+                    }
+                }
+            });
+        }
+    </script>
 </th:block>
 </body>
 </html>

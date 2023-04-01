@@ -6,8 +6,11 @@ import com.example.snkrs.service.CategoryService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import java.awt.print.Pageable;
 
 @RestController
 public class CategoryApiController {
@@ -19,6 +22,7 @@ public class CategoryApiController {
     }
 
     @PostMapping("/api/categories")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'MANAGER')")
     public ResponseEntity<ApiResponse> createCategory(@Valid SaveCategoryRequest request, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(new ApiResponse("Invalid request", bindingResult.getAllErrors()));
@@ -26,6 +30,16 @@ public class CategoryApiController {
         try {
             var category = categoryService.createCategory(request);
             return ResponseEntity.ok(new ApiResponse("Category created successfully", category));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ApiResponse(e.getMessage(), null));
+        }
+    }
+
+    @GetMapping("/api/categories")
+    public ResponseEntity<ApiResponse> getAllCategories() {
+        try {
+            var categories = categoryService.getAllCategories(0, Integer.MAX_VALUE);
+            return ResponseEntity.ok(new ApiResponse("Categories fetched successfully", categories));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ApiResponse(e.getMessage(), null));
         }
@@ -42,6 +56,7 @@ public class CategoryApiController {
     }
 
     @PutMapping("/api/categories/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'MANAGER')")
     public ResponseEntity<ApiResponse> updateCategory(@PathVariable String id, @Valid SaveCategoryRequest request, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(new ApiResponse("Invalid request", bindingResult.getAllErrors()));
@@ -55,6 +70,7 @@ public class CategoryApiController {
     }
 
     @DeleteMapping("/api/categories/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'MANAGER')")
     public ResponseEntity<ApiResponse> deleteCategory(@PathVariable String id) {
         try {
             categoryService.deleteCategory(id);

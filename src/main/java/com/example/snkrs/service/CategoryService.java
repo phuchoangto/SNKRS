@@ -2,6 +2,7 @@ package com.example.snkrs.service;
 
 import com.example.snkrs.model.Category;
 import com.example.snkrs.repository.CategoryRepository;
+import com.example.snkrs.repository.ProductRepository;
 import com.example.snkrs.request.SaveCategoryRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -9,15 +10,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import java.text.Normalizer;
 
-import java.util.List;
-
 @Service
 public class CategoryService {
     private final CategoryRepository categoryRepository;
+    private final ProductRepository productRepository;
 
     @Autowired
-    public CategoryService(CategoryRepository categoryRepository) {
+    public CategoryService(CategoryRepository categoryRepository, ProductRepository productRepository) {
         this.categoryRepository = categoryRepository;
+        this.productRepository = productRepository;
     }
 
     public Page<Category> getAllCategories(int page, int limit) {
@@ -65,6 +66,14 @@ public class CategoryService {
 
     public void deleteCategory(String id) {
         var category = getCategory(id);
+
+        // remove category from products
+        var products = productRepository.findByCategory(category);
+        for (var product : products) {
+            product.getCategories().remove(category);
+            productRepository.save(product);
+        }
+
         categoryRepository.delete(category);
     }
 }
