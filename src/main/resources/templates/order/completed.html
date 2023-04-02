@@ -5,40 +5,175 @@
 <head>
     <meta charset="UTF-8">
     <title>Cart</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bs-stepper/dist/css/bs-stepper.min.css">
+    <style>
+        .gradient-custom-2 {
+            /* fallback for old browsers */
+            background: #a1c4fd;
+
+            /* Chrome 10-25, Safari 5.1-6 */
+            background: -webkit-linear-gradient(to right, rgba(161, 196, 253, 1), rgba(194, 233, 251, 1));
+
+            /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+            background: linear-gradient(to right, rgba(161, 196, 253, 1), rgba(194, 233, 251, 1))
+        }
+
+        #progressbar-1 {
+            color: #455A64;
+        }
+
+        #progressbar-1 li {
+            list-style-type: none;
+            font-size: 13px;
+            width: 33.33%;
+            float: left;
+            position: relative;
+        }
+
+        #progressbar-1 #step1:before {
+            content: "1";
+            color: #fff;
+            width: 29px;
+            margin-left: 22px;
+            padding-left: 11px;
+        }
+
+        #progressbar-1 #step2:before {
+            content: "2";
+            color: #fff;
+            width: 29px;
+        }
+
+        #progressbar-1 #step3:before {
+            content: "3";
+            color: #fff;
+            width: 29px;
+            margin-right: 22px;
+            text-align: center;
+        }
+
+        #progressbar-1 li:before {
+            line-height: 29px;
+            display: block;
+            font-size: 12px;
+            background: #455A64;
+            border-radius: 50%;
+            margin: auto;
+        }
+
+        #progressbar-1 li:after {
+            content: '';
+            width: 121%;
+            height: 2px;
+            background: #455A64;
+            position: absolute;
+            left: 0%;
+            right: 0%;
+            top: 15px;
+            z-index: -1;
+        }
+
+        #progressbar-1 li:nth-child(2):after {
+            left: 50%
+        }
+
+        #progressbar-1 li:nth-child(1):after {
+            left: 25%;
+            width: 121%
+        }
+
+        #progressbar-1 li:nth-child(3):after {
+            left: 25%;
+            width: 50%;
+        }
+
+        #progressbar-1 li.active:before,
+        #progressbar-1 li.active:after {
+            background: #1266f1;
+        }
+
+        .card-stepper {
+            z-index: 0
+        }
+    </style>
 </head>
 <body>
 <th:block layout:fragment="content">
-    <main>
-        <div class="bs-stepper">
-            <div class="bs-stepper-header" role="tablist">
-                <!-- your steps here -->
-                <div class="step" data-target="#logins-part">
-                    <button type="button" class="step-trigger" role="tab" aria-controls="logins-part" id="logins-part-trigger">
-                        <span class="bs-stepper-circle">1</span>
-                        <span class="bs-stepper-label">Logins</span>
-                    </button>
+    <main class="gradient-custom-2">
+        <div class="container mt-5 pt-4">
+            <section class="vh-100">
+                <div class="container py-5 h-100">
+                    <div class="row d-flex justify-content-center align-items-center h-100">
+                        <div class="col-md-10 col-lg-8 col-xl-6">
+                            <div class="card card-stepper" style="border-radius: 16px;">
+                                <div class="card-header p-4">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <p class="text-muted mb-2"> Order ID <span class="fw-bold text-body" th:text="${order.id}">1222528743</span></p>
+                                            <p class="text-muted mb-0"> Place On <span class="fw-bold text-body" th:text="${order.formattedCreatedAt}">12,March 2019</span> </p>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0"> <a href="#">View Details</a> </h6>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body p-4">
+                                    <div class="d-flex flex-row mb-4 pb-2">
+                                        <div class="flex-fill">
+                                            <h5 class="bold" th:text="${order.firstName + ' ' + order.lastName}">John Doe</h5>
+                                            <p class="text-muted" th:text="${order.hiddenPhone}"> Qt: 1 item</p>
+                                            <p class="text-muted" th:text="${order.hiddenAddress}"> Qt: 1 item</p>
+                                            <h4 class="mb-3"> <span th:text="${order.formattedTotal}"></span> <span class="small text-muted"> via (<span th:text="${order.paymentMethod}"></span>) </span></h4>
+                                            <p class="text-muted">Last update: <span class="text-body" th:text="${order.formattedUpdatedAt}">11:30pm, Today</span></p>
+                                        </div>
+                                    </div>
+                                    <ul id="progressbar-1" class="mx-0 mt-0 mb-5 px-0 pt-0 pb-4">
+                                        <li class="step0" id="step1"><span
+                                                style="margin-left: 22px; margin-top: 12px;">PAYMENT</span></li>
+                                        <li class="step0 text-center" id="step2"><span>DELIVERING</span></li>
+                                        <li class="step0 text-muted text-end" id="step3"><span
+                                                style="margin-right: 22px;">DELIVERED</span></li>
+                                    </ul>
+                                </div>
+                                <div class="card-footer p-4">
+                                    <div class="d-flex justify-content-between">
+                                        <h5 class="fw-normal mb-0"><a href="#!">Track</a></h5>
+                                        <div class="border-start h-100"></div>
+                                        <h5 class="fw-normal mb-0"><a href="#!">Cancel</a></h5>
+                                        <div class="border-start h-100"></div>
+                                        <h5 class="fw-normal mb-0"><a href="#!">Pre-pay</a></h5>
+                                        <div class="border-start h-100"></div>
+                                        <h5 class="fw-normal mb-0"><a href="#!" class="text-muted"><i class="fas fa-ellipsis-v"></i></a>
+                                        </h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="line"></div>
-                <div class="step" data-target="#information-part">
-                    <button type="button" class="step-trigger" role="tab" aria-controls="information-part" id="information-part-trigger">
-                        <span class="bs-stepper-circle">2</span>
-                        <span class="bs-stepper-label">Various information</span>
-                    </button>
-                </div>
-            </div>
-            <div class="bs-stepper-content">
-                <!-- your steps content here -->
-                <div id="logins-part" class="content" role="tabpanel" aria-labelledby="logins-part-trigger"></div>
-                <div id="information-part" class="content" role="tabpanel" aria-labelledby="information-part-trigger"></div>
-            </div>
+            </section>
         </div>
-
     </main>
 
 </th:block>
 <th:block layout:fragment="scripts">
-    <script src="https://cdn.jsdelivr.net/npm/bs-stepper/dist/js/bs-stepper.min.js"></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        $(document).ready(function () {
+            var status = [[${order.status}]];
+
+            if (status == "NEW") {
+                $("#step1").addClass("active");
+            } else if (status == "PAID" || status == "PROCESSING" || status == "DELIVERING") {
+                $("#step1").addClass("active");
+                $("#step2").addClass("active");
+            } else if (status == "DELIVERED") {
+                $("#step1").addClass("active");
+                $("#step2").addClass("active");
+                $("#step3").addClass("active");
+            }
+        });
+        /*]]>*/
+    </script>
 </th:block>
 </body>
 </html>

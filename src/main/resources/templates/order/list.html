@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/dashboard-layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Categories</title>
+</head>
+<body>
+<th:block layout:fragment="content">
+    <!-- Section: Main chart -->
+    <section class="mb-4">
+        <div class="card">
+            <div class="card-header py-3">
+                <h5 class="mb-0 text-center">
+                    <!-- Title and button in one line but title in center button on the right -->
+                    <div class="d-flex justify-content-between">
+                        <div class="p-2 d-flex align-items-center">
+                            <strong>Manage Products</strong>
+                        </div>
+                        <div class="p-2">
+                            <a th:href="@{/dashboard/products/create}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-plus"></i>
+                                Create new product
+                            </a>
+                        </div>
+                    </div>
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                <table class="table align-middle mb-0 bg-white">
+                    <thead class="bg-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Total</th>
+                        <th>Customer</th>
+                        <th>Address</th>
+                        <th>Phone</th>
+                        <th>Create At</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <th:block th:if="${!orders.hasContent()}">
+                        <tr>
+                            <td colspan="3" class="text-center">No products found</td>
+                        </tr>
+                    </th:block>
+
+
+                    <th:block th:each="order : ${orders.content}">
+                        <tr th:attr="data-id=${order.id}"></td>
+                            <td>
+                                <span th:text="${order.id}"></span>
+                                <span class="badge badge-info" th:text="${order.status}"></span>
+                            </td>
+                            <td th:text="${order.formattedTotal}"></td>
+                            <td th:text="${order.fullName}"></td>
+                            <td th:text="${order.address}"></td>
+                            <td th:text="${order.phone}"></td>
+                            <td th:text="${order.formattedCreatedAt}"></td>
+                            <td>
+                                <a th:href="@{/dashboard/orders/{id}(id=${order.id})}" class="btn btn-link btn-rounded btn-sm fw-bold text-primary">
+                                    View
+                                </a>
+                                <a class="btn btn-link btn-rounded btn-sm fw-bold text-info" onclick="updateStatus(this)">
+                                    Update Status
+                                </a>
+                            </td>
+                        </tr>
+                    </th:block>
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-body">
+                <nav aria-label="...">
+                    <ul class="pagination">
+                        <li class="page-item" th:if="${orders.hasPrevious()}">
+                            <a class="page-link"
+                               th:href="@{/dashboard/categories?page=${orders.number - 1}}">Previous</a>
+                        </li>
+                        <th:block th:each="page : ${#numbers.sequence(0, orders.totalPages - 1)}">
+                            <li class="page-item" th:classappend="${page == orders.number} ? 'active'">
+                                <a class="page-link" th:href="@{/dashboard/orders?page=${page}}">[[${page + 1}]]</a>
+                            </li>
+                        </th:block>
+                        <li class="page-item" th:if="${orders.hasNext()}">
+                            <a class="page-link" th:href="@{/dashboard/categories?page=${orders.number + 1}}">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </section>
+    <!-- Section: Main chart -->
+</th:block>
+
+<th:block layout:fragment="modal">
+    <!-- Modal -->
+    <div class="modal fade" id="updateStatusModal" tabindex="-1" aria-labelledby="updateStatusModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updateStatusModalLabel">Modal title</h5>
+                    <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="update-status-form">
+                        <input type="hidden" name="id">
+                        <select name="status" class="form-select">
+                            <option value="NEW">New</option>
+                            <option value="PAID">Paid</option>
+                            <option value="PROCESSING">Processing</option>
+                            <option value="DELIVERING">Delivering</option>
+                            <option value="DELIVERED">Delivered</option>
+                        </select>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-mdb-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" form="update-status-form">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>
+
+<th:block layout:fragment="scripts">
+    <script>
+        function updateStatus(element) {
+            const id = $(element).closest('tr').data('id');
+            $('#update-status-form input[name="id"]').val(id);
+            var currentStatus = $(element).closest('tr').find('span.badge').text();
+            $('#update-status-form select[name="status"]').val(currentStatus);
+            $('#updateStatusModal').modal('show');
+        }
+
+        $(document).ready(function () {
+            $('#update-status-form').submit(function (e) {
+                e.preventDefault();
+                const id = $(this).find('input[name="id"]').val();
+                const status = $(this).find('select[name="status"]').val();
+                $.ajax({
+                    // /api/orders/{id}/status
+                    url: '/api/orders/' + id + '/status',
+                    method: 'PUT',
+                    data: {
+                        status: status
+                    },
+                    success: function (response) {
+                        console.log(response);
+                        iziToast.success({
+                            title: 'Success',
+                            message: response.message
+                        });
+                        // update badge
+                        $('tr[data-id="' + id + '"] span.badge').text(status);
+                    },
+                    error: function (response) {
+                        console.log(response);
+                        iziToast.error({
+                            title: 'Error',
+                            message: response.responseJSON.message
+                        });
+                    },
+                    complete: function () {
+                        $('#updateStatusModal').modal('hide');
+                    }
+                });
+            });
+        });
+    </script>
+</th:block>
+</body>
+</html>

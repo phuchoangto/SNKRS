@@ -19,6 +19,14 @@
     <link rel="stylesheet" th:href="@{/css/iziToast.min.css}"/>
     <!-- Select2 -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <!-- selectize -->
+    <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.default.min.css"
+            integrity="sha512-pTaEn+6gF1IeWv3W1+7X7eM60TFu/agjgoHmYhAfLEU8Phuf6JKiiE8YmsNC0aCgQv4192s4Vai8YZ6VNM6vyQ=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+    />
     <!-- Custom styles -->
     <link rel="stylesheet" th:href="@{/css/admin.css}"/>
 </head>
@@ -35,11 +43,17 @@
                 <a href="#" class="list-group-item list-group-item-action py-2 ripple">
                     <i class="fas fa-chart-area fa-fw me-3"></i><span>Analytics</span>
                 </a>
+                <a th:href="@{/dashboard/users}" class="list-group-item list-group-item-action py-2 ripple">
+                    <i class="fas fa-chart-area fa-fw me-3"></i><span>Users</span>
+                </a>
                 <a th:href="@{/dashboard/categories}" class="list-group-item list-group-item-action py-2 ripple">
                     <i class="fas fa-chart-area fa-fw me-3"></i><span>Categories</span>
                 </a>
                 <a th:href="@{/dashboard/products}" class="list-group-item list-group-item-action py-2 ripple">
                     <i class="fas fa-chart-area fa-fw me-3"></i><span>Products</span>
+                </a>
+                <a th:href="@{/dashboard/orders}" class="list-group-item list-group-item-action py-2 ripple">
+                    <i class="fas fa-chart-area fa-fw me-3"></i><span>Orders</span>
                 </a>
             </div>
         </div>
@@ -181,6 +195,13 @@
 <script type="text/javascript" th:src="@{/js/sweetalert2.min.js}"></script>
 <!-- Select2 -->
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<!-- selectize -->
+<script
+        src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/js/selectize.min.js"
+        integrity="sha512-IOebNkvA/HZjMM7MxL0NYeLYEalloZ8ckak+NDtOViP7oiYzG5vn6WVXyrJDiJPhl4yRdmNAG49iuLmhkUdVsQ=="
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+></script>
 <script>
     function removeVietnameseAccents(str) {
         str = str.toLowerCase();

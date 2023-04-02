@@ -1,9 +1,9 @@
 package com.example.snkrs.model;
 
 public enum OrderStatus {
-    WAITING_FOR_PAYMENT,
+    NEW,
+    PAID,
     PROCESSING,
     DELIVERING,
     DELIVERED,
-    CANCELED
 }

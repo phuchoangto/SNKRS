@@ -6,6 +6,8 @@ import com.example.snkrs.repository.ProductRepository;
 import com.example.snkrs.request.SaveOrderRequest;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.annotation.SessionScope;
@@ -35,6 +37,10 @@ public class OrderService {
 
     public Order getOrderById(String id) {
         return orderRepository.findById(id).orElseThrow(() -> new RuntimeException("Order not found"));
+    }
+
+    public Page<Order> getAllOrders(int page, int size) {
+        return orderRepository.findAll(PageRequest.of(page, size));
     }
 
     public Order completeOrder(Order order) {
@@ -91,16 +97,36 @@ public class OrderService {
         order.setTotal(total);
 
         // if payment method is CASH, set status to PROCESSING
-        if (request.getPaymentMethod() == PaymentMethod.CASH) {
+        if (request.getPaymentMethod() == PaymentMethod.COD) {
             order.setStatus(OrderStatus.PROCESSING);
         }
 
-        // if payment method is PAYPAL, set status to WAITING_FOR_PAYMENT
+        // if payment method is PAYPAL, set status to NEW
         if (request.getPaymentMethod() == PaymentMethod.PAYPAL) {
-            order.setStatus(OrderStatus.WAITING_FOR_PAYMENT);
+            order.setStatus(OrderStatus.NEW);
+        }
+
+        // if request.saveInfo is true, save user info
+        if (request.getSaveInfo()) {
+            Address address = new Address();
+            address.setFirstName(request.getFirstName());
+            address.setLastName(request.getLastName());
+            address.setPhone(request.getPhone());
+            address.setAddress(request.getAddress());
+            address.setProvince(request.getProvince());
+            address.setDistrict(request.getDistrict());
+            address.setWard(request.getWard());
+            User user = authService.getCurrentUser();
+            user.setAddress(address);
         }
 
         // save order
+        return orderRepository.save(order);
+    }
+
+    public Order updateOrderStatus(String id, String status) {
+        Order order = getOrderById(id);
+        order.setStatus(OrderStatus.valueOf(status));
         return orderRepository.save(order);
     }
 }

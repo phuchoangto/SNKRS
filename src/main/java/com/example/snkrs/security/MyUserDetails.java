@@ -1,5 +1,6 @@
 package com.example.snkrs.security;
 
+import com.example.snkrs.model.Role;
 import com.example.snkrs.model.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -17,8 +18,12 @@ public class MyUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        var role = user.getRole();
-        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
+        List<Role> roles = user.getRoles();
+        var authorities = new SimpleGrantedAuthority[roles.size()];
+        for (Role role : roles) {
+            authorities[roles.indexOf(role)] = new SimpleGrantedAuthority("ROLE_" + role.name());
+        }
+        return List.of(authorities);
     }
 
     @Override

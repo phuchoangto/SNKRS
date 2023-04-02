@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/dashboard-layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Users</title>
+</head>
+<body>
+<th:block layout:fragment="content">
+    <!-- Section: Main chart -->
+    <section class="mb-4">
+        <div class="card">
+            <div class="card-header py-3">
+                <h5 class="mb-0 text-center">
+                    <!-- Title and button in one line but title in center button on the right -->
+                    <div class="d-flex justify-content-between">
+                        <div class="p-2 d-flex align-items-center">
+                            <strong>Manage Users</strong>
+                        </div>
+                        <div class="p-2">
+                            <a onclick="createUser()" class="btn btn-primary btn-sm">
+                                <i class="fas fa-plus"></i>
+                                Create new users
+                            </a>
+                        </div>
+                    </div>
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                <table class="table align-middle mb-0 bg-white">
+                    <thead class="bg-light">
+                    <tr>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <th:block th:if="${!users.hasContent()}">
+                        <tr>
+                            <td colspan="3" class="text-center">No products found</td>
+                        </tr>
+                    </th:block>
+                    <th:block th:each="user : ${users.content}">
+                        <tr th:attr="data-id=${user.id}">
+                            <td th:text="${user.username}"></td>
+                            <td th:text="${user.email}"></td>
+                            <td>
+                                <th:block th:each="role : ${user.roles}">
+                                    <span class="badge badge-primary" th:text="${role}"></span>
+                                </th:block>
+                            </td>
+                            <td>
+                                <a onclick="updateRole(this)"
+                                   class="btn btn-link btn-rounded btn-sm fw-bold text-warning">
+                                    Change permissions
+                                </a>
+                            </td>
+                        </tr>
+                    </th:block>
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-body">
+                <nav aria-label="...">
+                    <ul class="pagination">
+                        <li class="page-item" th:if="${users.hasPrevious()}">
+                            <a class="page-link"
+                               th:href="@{/dashboard/users?page=${users.number - 1}}">Previous</a>
+                        </li>
+                        <th:block th:each="page : ${#numbers.sequence(0, users.totalPages - 1)}">
+                            <li class="page-item" th:classappend="${page == users.number} ? 'active'">
+                                <a class="page-link" th:href="@{/dashboard/users?page=${page}}">[[${page + 1}]]</a>
+                            </li>
+                        </th:block>
+                        <li class="page-item" th:if="${users.hasNext()}">
+                            <a class="page-link" th:href="@{/dashboard/users?page=${users.number + 1}}">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </section>
+    <!-- Section: Main chart -->
+</th:block>
+
+<th:block layout:fragment="modal">
+    <!-- Modal -->
+    <div class="modal fade" id="updateRoleModal" tabindex="-1" aria-labelledby="updateRoleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updateRoleModalLabel">Update role</h5>
+                    <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="update-roles-form" method="post">
+                        <input type="hidden" name="id">
+                        <select id="select-roles" multiple="multiple">
+                            <option value="ADMIN">Admin</option>
+                            <option value="CUSTOMER">Customer</option>
+                            <option value="MANAGER">Manager</option>
+                            <option value="DELIVERY_MAN">Delivery man</option>
+                        </select>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-mdb-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" form="update-roles-form">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="createUserModal" tabindex="-1" aria-labelledby="updateRoleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createUserModalLabel">Create new user</h5>
+                    <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="create-user-form" method="post">
+                        <div class="form-outline mb-4">
+                            <input type="text" id="createUsername" class="form-control form-control-lg" name="username"/>
+                            <label class="form-label" for="createUsername">Username</label>
+                        </div>
+                        <div class="form-outline mb-4">
+                            <input type="email" id="createEmail" class="form-control form-control-lg" name="email"/>
+                            <label class="form-label" for="createEmail">Email</label>
+                        </div>
+                        <div class="form-outline mb-4">
+                            <input type="password" id="createPassword" class="form-control form-control-lg" name="password"/>
+                            <label class="form-label" for="createPassword">Password</label>
+                        </div>
+                        <select id="create-select-roles" multiple="multiple">
+                            <option value="ADMIN">Admin</option>
+                            <option value="CUSTOMER">Customer</option>
+                            <option value="MANAGER">Manager</option>
+                            <option value="DELIVERY_MAN">Delivery man</option>
+                        </select>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-mdb-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" form="create-user-form">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>
+
+<th:block layout:fragment="scripts">
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        $(document).ready(function () {
+            // get current roles from span class .badge-primary
+            let roles = $('.badge-primary').text().trim().split(' ');
+
+            // init selectize and select current role
+            $('#select-roles').selectize({
+                valueField: 'value',
+                labelField: 'text',
+                searchField: 'text',
+                placeholder: 'Select your role',
+                items: roles,
+                plugins: ["remove_button"],
+            });
+
+            $('#create-select-roles').selectize({
+                valueField: 'value',
+                labelField: 'text',
+                searchField: 'text',
+                placeholder: 'Select your role',
+                plugins: ["remove_button"],
+            });
+
+            $('#update-roles-form').submit(function (e) {
+                e.preventDefault();
+                let id = $(this).find('input[name="id"]').val();
+                let selectize = $('#select-roles')[0].selectize;
+                let roles = selectize.getValue();
+                // join ,
+                roles = roles.join(',');
+                $.ajax({
+                    url: '/api/users/' + id + '/roles',
+                    type: 'PUT',
+                    data: {
+                        roles: roles
+                    },
+                    success: function (response) {
+                        console.log(response);
+                        $('#updateRoleModal').modal('hide');
+                        iziToast.success({
+                            title: 'Success',
+                            message: response.message,
+                        });
+                        // update roles in html
+                        roles = roles.split(',');
+                        let html = '';
+                        roles.forEach(function (role) {
+                            html += '<span class="badge badge-primary">' + role + '</span>';
+                        });
+                        $('tr[data-id="' + id + '"]').find('td:nth-child(3)').html(html);
+                    },
+                    error: function (response) {
+                        console.log(response);
+                        iziToast.error({
+                            title: 'Error',
+                            message: response.responseJSON.message,
+                        });
+                    }
+                });
+            });
+
+            $('#create-user-form').submit(function (e) {
+                e.preventDefault();
+                let username = $(this).find('input[name="username"]').val();
+                let email = $(this).find('input[name="email"]').val();
+                let password = $(this).find('input[name="password"]').val();
+                let selectize = $('#create-select-roles')[0].selectize;
+                let roles = selectize.getValue();
+                // join ,
+                roles = roles.join(',');
+                $.ajax({
+                    url: '/api/users',
+                    type: 'POST',
+                    data: {
+                        username: username,
+                        email: email,
+                        password: password,
+                        roles: roles
+                    },
+                    success: function (response) {
+                        console.log(response);
+                        $('#createUserModal').modal('hide');
+                        iziToast.success({
+                            title: 'Success',
+                            message: response.message,
+                        });
+                        // update roles in html
+                        roles = roles.split(',');
+                        let html = '';
+                        roles.forEach(function (role) {
+                            html += '<span class="badge badge-primary">' + role + '</span>';
+                        });
+                        let tr = '<tr data-id="' + response.data.id + '">\n' +
+                            '                                <td>' + response.data.username + '</td>\n' +
+                            '                                <td>' + response.data.email + '</td>\n' +
+                            '                                <td>' + html + '</td>\n' +
+                            '                                <td>\n' +
+                            '                                    <button class="btn btn-primary" onclick="updateRole(this)">Update role</button>\n' +
+                            '                                </td>\n' +
+                            '                            </tr>';
+                        $('tbody').prepend(tr);
+                    },
+                    error: function (response) {
+                        console.log(response);
+                        iziToast.error({
+                            title: 'Error',
+                            message: response.responseJSON.message,
+                        });
+                    }
+                });
+            });
+        });
+
+        function createUser() {
+            $('#createUserModal').modal('show');
+        }
+
+
+
+
+        function updateRole(element) {
+            let id = $(element).closest('tr').data('id');
+            let roles = $(element).closest('tr').find('td:nth-child(3)').text().trim().split(' ');
+            $('#updateRoleModal').modal('show');
+            $('#updateRoleModal').find('input[name="id"]').val(id);
+            $('#updateRoleModal').find('select[name="roles"]').val(roles).trigger('change');
+        }
+
+
+        /*]]>*/
+    </script>
+</th:block>
+</body>
+</html>

@@ -90,15 +90,56 @@ public class OrderController {
     public String completeOrder(HttpServletRequest request, @PathVariable String id, Model model) {
         try {
             var order = orderService.getOrderById(id);
-//            Payment payment = paypalService.executePayment(request.getParameter("paymentId"), request.getParameter("PayerID"));
-//            if(payment.getState().equals("approved")){
-//                orderService.completeOrder(order);
-//                model.addAttribute("order", order);
-//                return "order";
-//            }
-//            model.addAttribute("error", "Payment failed");
+            var paymentId = request.getParameter("paymentId");
+            var payerId = request.getParameter("PayerID");
+
+            if (paymentId != null && payerId != null) {
+                Payment payment = paypalService.executePayment(request.getParameter("paymentId"), request.getParameter("PayerID"));
+                if(payment.getState().equals("approved")){
+                    var orderCompleted = orderService.completeOrder(order);
+                    model.addAttribute("order", orderCompleted);
+                    return "order/completed";
+                } else {
+                    model.addAttribute("error", "Payment failed");
+                    return "order/completed";
+                }
+            }
             model.addAttribute("order", order);
             return "order/completed";
+        } catch (Exception e) {
+                return "redirect:/404";
+        }
+    }
+
+    @GetMapping("/dashboard/orders")
+    public String manageOrders(@RequestParam(defaultValue = "0") int page,
+                               @RequestParam(defaultValue = "10") int limit,
+                               Model model) {
+        try {
+            model.addAttribute("orders", orderService.getAllOrders(page, limit));
+            return "order/list";
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            return "error";
+        }
+    }
+
+    @GetMapping("/dashboard/orders/{id}")
+    public String manageOrder(@PathVariable String id, Model model) {
+        try {
+            model.addAttribute("order", orderService.getOrderById(id));
+            return "order/detail";
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            return "error";
+        }
+    }
+
+    @GetMapping("/dashboard/orders/{id}/delivery")
+    public String deliveryOrder(@PathVariable String id, Model model) {
+        try {
+            model.addAttribute("order", orderService.getOrderById(id));
+            return "order/delivery";
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
             return "error";
