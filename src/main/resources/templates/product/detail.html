@@ -4,7 +4,7 @@
       layout:decorate="~{layout/main-layout}">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>[[${product.name}]]</title>
 </head>
 <body>
 <th:block layout:fragment="content">
@@ -78,7 +78,7 @@
             </div>
             <!--Grid row-->
 
-            <th:block th:utext="${product.description}"></th:block>
+            <th:block th:utext="${product.description}" th:id="description"></th:block>
         </div>
     </main>
     <!--Main layout-->
@@ -179,6 +179,11 @@
                 }
             });
         }
+
+        $(document).ready(function () {
+            // all image in description has class img-fluid
+            $("picture img").addClass("img-fluid");
+        })
     </script>
 </th:block>
 

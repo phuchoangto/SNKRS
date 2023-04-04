@@ -60,15 +60,15 @@
                 <nav aria-label="...">
                     <ul class="pagination">
                         <li class="page-item" th:if="${categories.hasPrevious()}">
-                            <a class="page-link" th:href="@{/dashboard/categories?page=${categories.number - 1}}">Previous</a>
+                            <a class="page-link" th:href="@{/dashboard/categories?page={page}(page=${categories.number - 1})}">Previous</a>
                         </li>
                         <th:block th:each="page : ${#numbers.sequence(0, categories.totalPages - 1)}">
                             <li class="page-item" th:classappend="${page == categories.number} ? 'active'">
-                                <a class="page-link" th:href="@{/dashboard/categories?page=${page}}">[[${page + 1}]]</a>
+                                <a class="page-link" th:href="@{/dashboard/categories?page={page}(page=${page})}" th:text="${page + 1}"></a>
                             </li>
                         </th:block>
                         <li class="page-item" th:if="${categories.hasNext()}">
-                            <a class="page-link" th:href="@{/dashboard/categories?page=${categories.number + 1}}">Next</a>
+                            <a class="page-link" th:href="@{/dashboard/categories?page={page}(page=${categories.number + 1})}">Next</a>
                         </li>
                     </ul>
                 </nav>

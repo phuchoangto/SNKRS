@@ -11,6 +11,7 @@ public class SaveUserRequest {
     private String username;
 
     @NotBlank
+    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{8,}$", message = "Password must contain at least one digit, one lower case letter, one upper case letter, one special character, no whitespace, and at least 8 characters long")
     private String password;
 
     @NotBlank

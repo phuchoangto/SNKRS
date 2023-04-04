@@ -4,7 +4,7 @@
       layout:decorate="~{layout/dashboard-layout}">
 <head>
     <meta charset="UTF-8">
-    <title>Manage Categories</title>
+    <title>Manage Orders</title>
 </head>
 <body>
 <th:block layout:fragment="content">
@@ -77,15 +77,16 @@
                     <ul class="pagination">
                         <li class="page-item" th:if="${orders.hasPrevious()}">
                             <a class="page-link"
-                               th:href="@{/dashboard/categories?page=${orders.number - 1}}">Previous</a>
+                               th:href="@{/dashboard/categories?page={id}(id=${products.number - 1})}">Previous</a>
                         </li>
                         <th:block th:each="page : ${#numbers.sequence(0, orders.totalPages - 1)}">
                             <li class="page-item" th:classappend="${page == orders.number} ? 'active'">
-                                <a class="page-link" th:href="@{/dashboard/orders?page=${page}}">[[${page + 1}]]</a>
+                                <a class="page-link" th:href="@{/dashboard/orders?page={id}(id=${page})}"
+                                   th:text="${page + 1}"></a>
                             </li>
                         </th:block>
                         <li class="page-item" th:if="${orders.hasNext()}">
-                            <a class="page-link" th:href="@{/dashboard/categories?page=${orders.number + 1}}">Next</a>
+                            <a class="page-link" th:href="@{/dashboard/categories?page={id}(id=${products.number + 1})}">Next</a>
                         </li>
                     </ul>
                 </nav>

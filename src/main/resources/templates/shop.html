@@ -105,15 +105,15 @@
                 <ul class="pagination">
                   <li class="page-item" th:if="${products.hasPrevious()}">
                     <a class="page-link"
-                       th:href="@{/dashboard/categories?page=${products.number - 1}}">Previous</a>
+                       th:href="@{/dashboard/categories?page={page}(page=${products.number - 1})}">Previous</a>
                   </li>
                   <th:block th:each="page : ${#numbers.sequence(0, products.totalPages - 1)}">
                     <li class="page-item" th:classappend="${page == products.number} ? 'active'">
-                      <a class="page-link" th:href="@{/dashboard/products?page=${page}}">[[${page + 1}]]</a>
+                      <a class="page-link" th:href="@{/dashboard/products?page={page}(page=${page})}" th:text="${page + 1}">1</a>
                     </li>
                   </th:block>
                   <li class="page-item" th:if="${products.hasNext()}">
-                    <a class="page-link" th:href="@{/dashboard/categories?page=${products.number + 1}}">Next</a>
+                    <a class="page-link" th:href="@{/dashboard/categories?page={page}(page=${products.number + 1})}">Next</a>
                   </li>
                 </ul>
               </nav>
