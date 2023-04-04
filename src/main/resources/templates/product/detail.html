@@ -160,7 +160,7 @@
                 success: function (res) {
                     console.log(res);
                     // update badge
-                    $("#cart-badge").text(res.data.totalItems);
+                    $(".badge-notification").text(res.data.totalItems);
                     // sweet alert
                     Swal.fire({
                         icon: 'success',

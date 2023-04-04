@@ -20,4 +20,11 @@ public interface ProductRepository extends MongoRepository<Product, String> {
 
     @Query("{ 'slug': ?0 }")
     Optional<Product> findBySlug(String slug);
+
+    Page<Product> findAllByCategoriesAndNameContainingIgnoreCase(Category category, String search, Pageable pageable);
+
+    Page<Product> findAllByCategories(Category category, Pageable pageable);
+
+    Page<Product> findAllByNameContainingIgnoreCase(String search, Pageable pageable);
+
 }

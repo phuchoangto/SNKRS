@@ -31,7 +31,7 @@
                                     <tbody>
                                     <th:block th:if="${cart.items.isEmpty()}">
                                         <tr>
-                                            <td colspan="3" class="text-center">No products found</td>
+                                            <td colspan="5" class="text-center">No products found</td>
                                         </tr>
                                     </th:block>
 
@@ -55,41 +55,16 @@
                                             </td>
 
                                             <td>
-                                                <a onclick="updateQuantity(this)" class="btn btn-primary btn-sm">
+                                                <a onclick="updateQuantity(this)" class="btn btn-tertiary btn-sm me-2">
                                                     <i class="fas fa-sync"></i>
-                                                    Update
                                                 </a>
-                                                <a onclick="deleteCartItem(this)" class="btn btn-danger btn-sm">
+                                                <a onclick="deleteCartItem(this)" class="btn btn-tertiary btn-sm text-danger">
                                                     <i class="fas fa-trash"></i>
-                                                    Remove
                                                 </a>
                                             </td>
                                         </tr>
                                     </tbody>
                                 </table>
-                            </div>
-                        </div>
-                        <div class="card mb-4">
-                            <div class="card-body">
-                                <p><strong>Expected shipping delivery</strong></p>
-                                <p class="mb-0">12.10.2020 - 14.10.2020</p>
-                            </div>
-                        </div>
-                        <div class="card mb-4 mb-lg-0">
-                            <div class="card-body">
-                                <p><strong>We accept</strong></p>
-                                <img class="me-2" width="45px"
-                                     src="https://mdbcdn.b-cdn.net/wp-content/plugins/woocommerce-gateway-stripe/assets/images/visa.svg"
-                                     alt="Visa" />
-                                <img class="me-2" width="45px"
-                                     src="https://mdbcdn.b-cdn.net/wp-content/plugins/woocommerce-gateway-stripe/assets/images/amex.svg"
-                                     alt="American Express" />
-                                <img class="me-2" width="45px"
-                                     src="https://mdbcdn.b-cdn.net/wp-content/plugins/woocommerce-gateway-stripe/assets/images/mastercard.svg"
-                                     alt="Mastercard" />
-                                <img class="me-2" width="45px"
-                                     src="https://mdbcdn.b-cdn.net/wp-content/plugins/woocommerce/includes/gateways/paypal/assets/images/paypal.webp"
-                                     alt="PayPal acceptance mark" />
                             </div>
                         </div>
                     </div>
@@ -121,9 +96,9 @@
                                     </li>
                                 </ul>
 
-                                <button type="button" class="btn btn-primary btn-lg btn-block">
+                                <a th:href="@{/checkout}" class="btn btn-primary btn-lg btn-block">
                                     Go to checkout
-                                </button>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -156,11 +131,10 @@
                 error: function (response) {
                     console.log(response);
                     // sweet alert
-                    swal({
-                        title: "Error",
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
                         text: response.responseJSON.message,
-                        icon: "error",
-                        button: "Ok",
                     });
                 }
             });
@@ -188,7 +162,7 @@
                 error: function (response) {
                     console.log(response);
                     // sweet alert
-                    swal({
+                    Swal.fire({
                         title: "Error",
                         text: response.responseJSON.message,
                         icon: "error",

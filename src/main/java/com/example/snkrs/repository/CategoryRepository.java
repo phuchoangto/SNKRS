@@ -12,4 +12,5 @@ import java.util.Optional;
 public interface CategoryRepository extends MongoRepository<Category, String> {
     Optional<Category> findBySlug(String slug);
     Page<Category> findAll(Pageable pageable);
+    Category findByName(String name);
 }

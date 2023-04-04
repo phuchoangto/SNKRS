@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
@@ -15,6 +16,7 @@
           href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap"/>
     <!-- MDB -->
     <link rel="stylesheet" th:href="@{/css/mdb.min.css}"/>
+    <link rel="stylesheet" th:href="@{/css/admin.css}"/>
     <!-- iziToast -->
     <link rel="stylesheet" th:href="@{/css/iziToast.min.css}"/>
     <!-- Select2 -->
@@ -37,23 +39,20 @@
     <nav id="sidebarMenu" class="collapse d-lg-block sidebar collapse bg-white">
         <div class="position-sticky">
             <div class="list-group list-group-flush mx-3 mt-4">
-                <a href="#" class="list-group-item list-group-item-action py-2 ripple" aria-current="true">
+                <a th:href="@{/dashboard}" class="list-group-item list-group-item-action py-2 ripple" aria-current="true">
                     <i class="fas fa-tachometer-alt fa-fw me-3"></i><span>Main dashboard</span>
                 </a>
-                <a href="#" class="list-group-item list-group-item-action py-2 ripple">
-                    <i class="fas fa-chart-area fa-fw me-3"></i><span>Analytics</span>
+                <a th:href="@{/dashboard/users}" class="list-group-item list-group-item-action py-2 ripple" sec:authorize="hasRole('ROLE_ADMIN')">
+                    <i class="fas fa-user fa-fw me-3"></i><span>Users</span>
                 </a>
-                <a th:href="@{/dashboard/users}" class="list-group-item list-group-item-action py-2 ripple">
-                    <i class="fas fa-chart-area fa-fw me-3"></i><span>Users</span>
+                <a th:href="@{/dashboard/categories}" class="list-group-item list-group-item-action py-2 ripple" sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER')">
+                    <i class="far fa-folder me-3"></i><span>Categories</span>
                 </a>
-                <a th:href="@{/dashboard/categories}" class="list-group-item list-group-item-action py-2 ripple">
-                    <i class="fas fa-chart-area fa-fw me-3"></i><span>Categories</span>
+                <a th:href="@{/dashboard/products}" class="list-group-item list-group-item-action py-2 ripple" sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER')">
+                    <i class="fas fa-box-archive me-3"></i><span>Products</span>
                 </a>
-                <a th:href="@{/dashboard/products}" class="list-group-item list-group-item-action py-2 ripple">
-                    <i class="fas fa-chart-area fa-fw me-3"></i><span>Products</span>
-                </a>
-                <a th:href="@{/dashboard/orders}" class="list-group-item list-group-item-action py-2 ripple">
-                    <i class="fas fa-chart-area fa-fw me-3"></i><span>Orders</span>
+                <a th:href="@{/dashboard/orders}" class="list-group-item list-group-item-action py-2 ripple" sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_DELIVERY_MAN')">
+                    <i class="fas fa-cart-shopping me-3"></i><span>Orders</span>
                 </a>
             </div>
         </div>
@@ -166,7 +165,7 @@
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
                         <li><a class="dropdown-item" href="#">My profile</a></li>
                         <li><a class="dropdown-item" href="#">Settings</a></li>
-                        <li><a class="dropdown-item" href="#">Logout</a></li>
+                        <li><a class="dropdown-item" href="/logout">Logout</a></li>
                     </ul>
                 </li>
             </ul>
@@ -189,6 +188,7 @@
 <script type="text/javascript" th:src="@{/js/jquery-3.6.4.min.js}"></script>
 <!-- MDB -->
 <script type="text/javascript" th:src="@{/js/mdb.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/admin.js}"></script>
 <!-- iziToast -->
 <script type="text/javascript" th:src="@{/js/iziToast.min.js}"></script>
 <!-- SweetAlert2 -->
@@ -202,19 +202,6 @@
         crossorigin="anonymous"
         referrerpolicy="no-referrer"
 ></script>
-<script>
-    function removeVietnameseAccents(str) {
-        str = str.toLowerCase();
-        str = str.replace(/[áàảãạâấầẩẫậăắằẳẵặ]/g, 'a');
-        str = str.replace(/[éèẻẽẹêếềểễệ]/g, 'e');
-        str = str.replace(/[íìỉĩị]/g, 'i');
-        str = str.replace(/[óòỏõọôốồổỗộơớờởỡợ]/g, 'o');
-        str = str.replace(/[úùủũụưứừửữự]/g, 'u');
-        str = str.replace(/[ýỳỷỹỵ]/g, 'y');
-        str = str.replace(/đ/g, 'd');
-        return str;
-    }
-</script>
 <!-- Custom scripts -->
 <th:block layout:fragment="scripts"></th:block>
 </body>

@@ -41,17 +41,10 @@
             <!-- Left links -->
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item active">
-                    <a class="nav-link" href="https://mdbootstrap.com/">Home</a>
+                    <a th:href="@{/}" class="nav-link">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="https://mdbootstrap.com/docs/standard/">About MDB</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="https://mdbootstrap.com/docs/standard/getting-started/installation/">Free
-                        download</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="https://mdbootstrap.com/education/bootstrap/">Free tutorials</a>
+                    <a th:href="@{/shop}" class="nav-link">Shop</a>
                 </li>
             </ul>
             <!-- Left links -->
@@ -73,7 +66,7 @@
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuAvatar">
                     <li sec:authorize="!hasRole('ROLE_USER')">
-                        <a class="dropdown-item" href="#">Dashboard</a>
+                        <a class="dropdown-item" href="/dashboard">Dashboard</a>
                     </li>
                     <li>
                         <a class="dropdown-item" href="#">My profile</a>
@@ -82,7 +75,7 @@
                         <a class="dropdown-item" href="#">Settings</a>
                     </li>
                     <li>
-                        <a class="dropdown-item" href="#">Logout</a>
+                        <a class="dropdown-item" href="/logout">Logout</a>
                     </li>
                 </ul>
             </div>
@@ -102,71 +95,6 @@
 <!-- Navbar -->
 
 <th:block layout:fragment="content"></th:block>
-
-
-<footer class="text-center text-white mt-4" style="background-color: #607d8b;">
-    <!--Call to action-->
-    <div class="pt-4 pb-2">
-        <a class="btn btn-outline-white footer-cta mx-2"
-           href="https://mdbootstrap.com/docs/jquery/getting-started/download/" target="_blank" role="button">
-            Download MDB
-            <i class="fas fa-download ms-2"></i>
-        </a>
-        <a class="btn btn-outline-white footer-cta mx-2" href="https://mdbootstrap.com/education/bootstrap/"
-           target="_blank" role="button">
-            Start free tutorial
-            <i class="fas fa-graduation-cap ms-2"></i>
-        </a>
-    </div>
-    <!--/.Call to action-->
-
-    <hr class="text-dark"/>
-
-    <div class="container">
-        <!-- Section: Social media -->
-        <section class="mb-3">
-            <!-- Facebook -->
-            <a class="btn-link btn-floating btn-lg text-white" href="#!" role="button" data-mdb-ripple-color="dark"><i
-                    class="fab fa-facebook-f"></i></a>
-
-            <!-- Twitter -->
-            <a class="btn-link btn-floating btn-lg text-white" href="#!" role="button" data-mdb-ripple-color="dark"><i
-                    class="fab fa-twitter"></i></a>
-
-            <!-- Google -->
-            <a class="btn-link btn-floating btn-lg text-white" href="#!" role="button" data-mdb-ripple-color="dark"><i
-                    class="fab fa-google"></i></a>
-
-            <!-- Instagram -->
-            <a class="btn-link btn-floating btn-lg text-white" href="#!" role="button" data-mdb-ripple-color="dark"><i
-                    class="fab fa-instagram"></i></a>
-
-            <!-- YouTube -->
-            <a class="btn-link btn-floating btn-lg text-white" href="#!" role="button" data-mdb-ripple-color="dark"><i
-                    class="fab fa-youtube"></i></a>
-            <!-- Github -->
-            <a class="btn-link btn-floating btn-lg text-white" href="#!" role="button" data-mdb-ripple-color="dark"><i
-                    class="fab fa-github"></i></a>
-        </section>
-        <!-- Section: Social media -->
-    </div>
-    <!-- Grid container -->
-
-    <!-- Messenger Plugin chat Code -->
-    <div id="fb-root"></div>
-
-    <!-- Your Plugin chat code -->
-    <div id="fb-customer-chat" class="fb-customerchat">
-    </div>
-
-
-    <!-- Copyright -->
-    <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2); text-color: #e0e0e0;">
-        © 2022 Copyright:
-        <a class="text-white" href="https://mdbootstrap.com/">MDBootstrap.com</a>
-    </div>
-    <!-- Copyright -->
-</footer>
 <!-- MDB -->
 <script type="text/javascript" th:src="@{/js/mdb.min.js}"></script>
 <!-- Jquery -->
@@ -194,13 +122,13 @@
     });
 </script>
 
-<script>
+<!--<script>
     var chatbox = document.getElementById('fb-customer-chat');
     chatbox.setAttribute("page_id", "103753952687096");
     chatbox.setAttribute("attribution", "biz_inbox");
 </script>
 
-<!-- Your SDK code -->
+&lt;!&ndash; Your SDK code &ndash;&gt;
 <script>
     window.fbAsyncInit = function () {
         FB.init({
@@ -217,7 +145,7 @@
         js.src = 'https://connect.facebook.net/en_US/sdk/xfbml.customerchat.js';
         fjs.parentNode.insertBefore(js, fjs);
     }(document, 'script', 'facebook-jssdk'));
-</script>
+</script>-->
 <th:block layout:fragment="scripts"></th:block>
 </body>
 </html>

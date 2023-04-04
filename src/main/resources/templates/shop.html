@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main-layout}">
+<head>
+  <meta charset="UTF-8">
+  <title>Shop</title>
+</head>
+<body>
+<th:block layout:fragment="content">
+
+  <main class="mt-5 pt-4">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-3">
+          <div class="container">
+            <h5 class="text-center">Categories</h5>
+            <div class="list-group list-group-light">
+              <th:block th:each="category : ${categories}">
+                <li class="list-group-item">
+                  <input class="form-check-input" type="checkbox" value="" id="checkboxExample1" th:value="${category.name}" onclick="searchByCategory(this)">
+                  <label class="form-check-label" for="checkboxExample1" th:text="${category.name}"></label>
+                </li>
+              </th:block>
+            </div>
+          </div>
+
+        </div>
+        <div class="col-9">
+          <!--Main layout-->
+          <main>
+              <!-- Navbar -->
+              <nav class="navbar navbar-expand-lg navbar-dark mt-3 mb-5 shadow p-2" style="background-color: #607d8b;">
+                <!-- Container wrapper -->
+                <div class="container-fluid">
+                  <!-- Navbar brand -->
+                  <a class="navbar-brand" href="#">Price:</a>
+
+                  <!-- Toggle button -->
+                  <button class="navbar-toggler" type="button" data-mdb-toggle="collapse" data-mdb-target="#navbarSupportedContent2" aria-controls="navbarSupportedContent2" aria-expanded="false" aria-label="Toggle navigation">
+                    <i class="fas fa-bars"></i>
+                  </button>
+
+                  <!-- Collapsible wrapper -->
+                  <div class="collapse navbar-collapse" id="navbarSupportedContent2">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                      <!-- Link -->
+                      <li class="nav-item acitve">
+                        <a class="nav-link text-white" href="#">Ascending</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link text-white" href="#">Decrease</a>
+                      </li>
+                    </ul>
+
+                    <!-- Search -->
+                    <form class="w-auto py-1" style="max-width: 12rem;">
+                      <input type="search" class="form-control rounded-0" placeholder="Search" aria-label="Search" name="search" />
+                    </form>
+                  </div>
+                </div>
+                <!-- Container wrapper -->
+              </nav>
+              <!-- Navbar -->
+
+              <!-- Products -->
+              <section>
+                <div class="text-center">
+                  <div class="row">
+                    <th:block th:each="product : ${products.content}">
+                      <div class="col-lg-3 col-md-6 mb-4">
+                        <div class="card">
+                          <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
+                            <img th:src="${product.image}" class="w-100" />
+                            <a th:href="@{/products/{slug}(slug=${product.slug})}">
+                              <div class="mask">
+                                <div class="d-flex justify-content-start align-items-end h-100">
+                                  <h5><span class="badge bg-dark ms-2">NEW</span></h5>
+                                </div>
+                              </div>
+                              <div class="hover-overlay">
+                                <div class="mask" style="background-color: rgba(251, 251, 251, 0.15);"></div>
+                              </div>
+                            </a>
+                          </div>
+                          <div class="card-body">
+                            <a href="" class="text-reset">
+                              <h5 class="card-title mb-2" th:text="${product.name}">Shirt</h5>
+                            </a>
+                            <a href="" class="text-reset">
+                              <p>Shirt</p>
+                            </a>
+                            <h6 class="mb-3 price" th:text="${product.getDisplayPrice()}"></h6>
+                          </div>
+                        </div>
+                      </div>
+                    </th:block>
+                  </div>
+                </div>
+              </section>
+
+            <th:block th:if="${products.totalPages > 1}">
+
+              <nav aria-label="Page navigation example" class="d-flex justify-content-center mt-3">
+                <ul class="pagination">
+                  <li class="page-item" th:if="${products.hasPrevious()}">
+                    <a class="page-link"
+                       th:href="@{/dashboard/categories?page=${products.number - 1}}">Previous</a>
+                  </li>
+                  <th:block th:each="page : ${#numbers.sequence(0, products.totalPages - 1)}">
+                    <li class="page-item" th:classappend="${page == products.number} ? 'active'">
+                      <a class="page-link" th:href="@{/dashboard/products?page=${page}}">[[${page + 1}]]</a>
+                    </li>
+                  </th:block>
+                  <li class="page-item" th:if="${products.hasNext()}">
+                    <a class="page-link" th:href="@{/dashboard/categories?page=${products.number + 1}}">Next</a>
+                  </li>
+                </ul>
+              </nav>
+            </th:block>
+            <th:block th:if="${products.totalPages == 0}">
+              <div class="text-center">
+                <h3>There are no products</h3>
+              </div>
+            </th:block>
+
+
+          </main>
+          <!--Main layout-->
+        </div>
+      </div>
+    </div>
+  </main>
+</th:block>
+<th:block layout:fragment="scripts">
+  <script>
+    function searchByCategory(element) {
+      var category = element.value;
+        var url = new URL(window.location.href);
+        var searchParams = new URLSearchParams(url.search);
+        searchParams.set('category', category);
+        url.search = searchParams.toString();
+        var newUrl = url.toString();
+        window.location.href = newUrl;
+    }
+
+
+    $(document).ready(function () {
+      // get categories from params
+        var url = new URL(window.location.href);
+        var searchParams = new URLSearchParams(url.search);
+        var category = searchParams.get('category');
+        if (category) {
+          // check checkbox
+          $('input[type=checkbox]').each(function () {
+            if (this.value === category) {
+              this.checked = true;
+            }
+          });
+        }
+
+    });
+  </script>
+</th:block>
+</body>
+</html>
