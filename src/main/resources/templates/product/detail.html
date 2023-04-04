@@ -43,7 +43,7 @@
 
                         <div class="mb-3">
                             <th:block th:each="size : ${product.sizes}">
-                                <button type="button" class="btn btn-outline-secondary" data-mdb-ripple-color="dark" th:text="${size.name}" onclick="changeSize(this)" th:disabled="${size.quantity == 0}"></button>
+                                <button type="button" class="btn btn-outline-secondary mb-2" data-mdb-ripple-color="dark" th:text="${size.name}" onclick="changeSize(this)" th:disabled="${size.quantity == 0}"></button>
                             </th:block>
                         </div>
 
